@@ -12,7 +12,9 @@ let config = {
       debug: false
     }
   },
-  scene: gameScene
+  scene: gameScene,
+  title: "Breakout {Gravity}",
+  version: "0.1.0 «Starter»"
 };
 
 let game = new Phaser.Game(config);
