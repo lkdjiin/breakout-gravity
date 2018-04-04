@@ -21,6 +21,9 @@ gameScene.init = function() {
   this.inPaddleShot = false;
   this.score = 0;
   this.scoreText;
+  this.lifes = 7;
+  this.lifesText;
+  this.digitFont = { fontFamily: "Courier", fontSize: "24px", fill: "#ddd" };
 };
 
 gameScene.preload = function() {
@@ -60,7 +63,8 @@ gameScene.create = function() {
   this.cursors = this.input.keyboard.createCursorKeys();
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-  this.scoreText = this.add.text(16, config.height - 28, "000000", { fontFamily: "Courier", fontSize: "24px", fill: "#ddd" });
+  this.scoreText = this.add.text(16, config.height - 28, "000000", this.digitFont);
+  this.lifesText = this.add.text(config.width - 32, config.height - 28, "7", this.digitFont);
 };
 
 gameScene.update = function() {
@@ -81,7 +85,7 @@ gameScene.update = function() {
     this.scoreText.setText(this.score.toString().padLeft("000000"));
 
     if (this.staticBricks.countActive(true) === 0) {
-      location.reload();
+      this.scene.start("Game");
     }
   });
 
@@ -115,6 +119,11 @@ gameScene.update = function() {
 
   if (this.ball.y > 480) {
     this.cameras.main.flash(500);
+    this.lifes--;
+    this.lifesText.setText(this.lifes);
+    if (this.lifes === 0) {
+      this.scene.start("Game");
+    }
     // Ball reset.
     this.ball.x = config.width / 2;
     this.ball.y = 208;
