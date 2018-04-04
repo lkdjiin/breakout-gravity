@@ -26,6 +26,9 @@ gameScene.init = function() {
   this.lifes = 7;
   this.lifesText;
   this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
+  this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
+  this.pause = true;
+  this.startText;
 };
 
 gameScene.preload = function() {
@@ -39,7 +42,7 @@ gameScene.create = function() {
   this.paddle.setSize(152, 64, false);
   this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
 
-  this.ball = this.physics.add.sprite(config.width / 2, 228, "ball");
+  this.ball = this.physics.add.sprite(config.width / 2, 240, "ball");
   this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
 
   this.staticBricks = this.physics.add.staticGroup({
@@ -67,6 +70,9 @@ gameScene.create = function() {
 
   this.scoreText = this.add.text(16, config.height - 30, "000000", this.digitFont);
   this.lifesText = this.add.text(config.width - 32, config.height - 30, "7", this.digitFont);
+
+  this.physics.pause();
+  this.startText = this.add.text(56, 360, "Press space to start", this.rulesFont);
 };
 
 gameScene.update = function() {
@@ -82,7 +88,7 @@ gameScene.update = function() {
     let y = brick.y;
 
     brick.destroy();
-    this.dynamicBricks.create(x, y, "brick");
+    this.dynamicBricks.create(x, y, "brick").setGravityY(50);
     this.score += 10;
     this.scoreText.setText(this.score.toString().padLeft("000000"));
 
@@ -109,6 +115,11 @@ gameScene.update = function() {
   }
 
   if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.y > config.height - 100) {
+    if (this.pause) {
+      this.startText.setText("");
+      this.physics.resume();
+      this.pause = false;
+    }
     this.paddle.setVelocityY(-500);
     this.inPaddleShot = true;
     this.time.delayedCall(200, () => { this.inPaddleShot = false; }, [], this);
