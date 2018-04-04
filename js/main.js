@@ -2,8 +2,8 @@ let gameScene = new Phaser.Scene("Game");
 
 let config = {
   type: Phaser.AUTO,
-  width: 464,
-  height: 504,
+  width: 600,
+  height: 620,
   backgroundColor: "#444444",
   physics: {
     default: "arcade",
@@ -25,7 +25,7 @@ gameScene.init = function() {
   this.scoreText;
   this.lifes = 7;
   this.lifesText;
-  this.digitFont = { fontFamily: "Courier", fontSize: "24px", fill: "#ddd" };
+  this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
 };
 
 gameScene.preload = function() {
@@ -35,23 +35,23 @@ gameScene.preload = function() {
 };
 
 gameScene.create = function() {
-  this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle")
+  this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle");
   this.paddle.setSize(152, 64, false);
   this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
 
-  this.ball = this.physics.add.sprite(config.width / 2, 208, "ball");
+  this.ball = this.physics.add.sprite(config.width / 2, 228, "ball");
   this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
 
   this.staticBricks = this.physics.add.staticGroup({
     key: "brick",
-    frameQuantity: 15
+    frameQuantity: 28
   });
 
   Phaser.Actions.GridAlign(this.staticBricks.getChildren(), {
-    width: 5,
-    height: 3,
-    cellWidth: 88,
-    cellHeight: 56,
+    width: 7,
+    height: 4,
+    cellWidth: 80,
+    cellHeight: 48,
     x: 68,
     y: 52
   });
@@ -65,8 +65,8 @@ gameScene.create = function() {
   this.cursors = this.input.keyboard.createCursorKeys();
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-  this.scoreText = this.add.text(16, config.height - 28, "000000", this.digitFont);
-  this.lifesText = this.add.text(config.width - 32, config.height - 28, "7", this.digitFont);
+  this.scoreText = this.add.text(16, config.height - 30, "000000", this.digitFont);
+  this.lifesText = this.add.text(config.width - 32, config.height - 30, "7", this.digitFont);
 };
 
 gameScene.update = function() {
@@ -83,7 +83,7 @@ gameScene.update = function() {
 
     brick.destroy();
     this.dynamicBricks.create(x, y, "brick");
-    this.score += 11;
+    this.score += 10;
     this.scoreText.setText(this.score.toString().padLeft("000000"));
 
     if (this.staticBricks.countActive(true) === 0) {
@@ -92,8 +92,6 @@ gameScene.update = function() {
   });
 
   this.physics.add.collider(this.paddle, this.dynamicBricks, () => {
-    // I don't know exactly what will happen if there is more than one
-    // dynamic brick touching the paddle.
     this.dynamicBricks.getChildren().forEach((brick) => {
       if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
         this.cameras.main.flash(500);
@@ -119,7 +117,7 @@ gameScene.update = function() {
     this.paddle.setVelocityY(50);
   }
 
-  if (this.ball.y > 480) {
+  if (this.ball.y > 580) {
     this.cameras.main.flash(500);
     this.lifes--;
     this.lifesText.setText(this.lifes);
@@ -135,11 +133,11 @@ gameScene.update = function() {
 };
 
 gameScene.getShotStrength = function(paddleY) {
-  // Paddle Y coordinate can be between 456 and 398 (that is a range of 58).
-  // At Y=456 we want the weaker shot strength (ball will get Y velocity = -250).
-  // At Y=398 we want the stronger shot strength (ball will get Y velocity = -600).
+  // Paddle Y coordinate can be between 576 and 518 (that is a range of 58).
+  // At Y=576 we want the weaker shot strength (ball will get Y velocity = -250).
+  // At Y=518 we want the stronger shot strength (ball will get Y velocity = -650).
 
-  let delta = 456 - paddleY;
+  let delta = 576 - paddleY;
   let ratio = delta / 58.0;
-  return -(ratio * 350 + 250);
+  return -(ratio * 400 + 250);
 };
