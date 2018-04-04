@@ -19,6 +19,8 @@ let game = new Phaser.Game(config);
 
 gameScene.init = function() {
   this.inPaddleShot = false;
+  this.score = 0;
+  this.scoreText;
 };
 
 gameScene.preload = function() {
@@ -57,6 +59,8 @@ gameScene.create = function() {
 
   this.cursors = this.input.keyboard.createCursorKeys();
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  this.scoreText = this.add.text(16, config.height - 28, "000000", { fontFamily: "Courier", fontSize: "24px", fill: "#ddd" });
 };
 
 gameScene.update = function() {
@@ -73,6 +77,8 @@ gameScene.update = function() {
 
     brick.destroy();
     this.dynamicBricks.create(x, y, "brick");
+    this.score += 11;
+    this.scoreText.setText(this.score.toString().padLeft("000000"));
 
     if (this.staticBricks.countActive(true) === 0) {
       location.reload();
