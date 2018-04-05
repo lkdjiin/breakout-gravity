@@ -4,6 +4,7 @@ let config = {
   type: Phaser.AUTO,
   width: 600,
   height: 620,
+  parent: "js-game",
   backgroundColor: "#444444",
   physics: {
     default: "arcade",
@@ -41,6 +42,8 @@ gameScene.preload = function() {
 };
 
 gameScene.create = function() {
+  displayVersion();
+
   this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle");
   this.paddle.setSize(152, 64, false);
   this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
@@ -158,3 +161,7 @@ gameScene.getShotStrength = function(paddleY) {
   let ratio = delta / 58.0;
   return -(ratio * 200 + 450);
 };
+
+function displayVersion() {
+  document.querySelector(".game-version").innerHTML = "v" + game.config.gameVersion;
+}
