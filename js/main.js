@@ -29,6 +29,7 @@ gameScene.init = function() {
   this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
   this.pause = true;
   this.startText;
+  this.paddleVelocity = 1000;
 };
 
 gameScene.preload = function() {
@@ -112,9 +113,9 @@ gameScene.update = function() {
   });
 
   if (this.cursors.left.isDown) {
-    this.paddle.setVelocityX(-250);
+    this.paddle.setVelocityX(-this.paddleVelocity);
   } else if (this.cursors.right.isDown) {
-    this.paddle.setVelocityX(250);
+    this.paddle.setVelocityX(this.paddleVelocity);
   } else {
     this.paddle.setVelocityX(0);
   }
@@ -150,10 +151,10 @@ gameScene.update = function() {
 
 gameScene.getShotStrength = function(paddleY) {
   // Paddle Y coordinate can be between 576 and 518 (that is a range of 58).
-  // At Y=576 we want the weaker shot strength (ball will get Y velocity = -250).
+  // At Y=576 we want the weaker shot strength (ball will get Y velocity = -450).
   // At Y=518 we want the stronger shot strength (ball will get Y velocity = -650).
 
   let delta = 576 - paddleY;
   let ratio = delta / 58.0;
-  return -(ratio * 400 + 250);
+  return -(ratio * 200 + 450);
 };
