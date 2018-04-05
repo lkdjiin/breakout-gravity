@@ -35,6 +35,8 @@ gameScene.preload = function() {
   this.load.image("ball", "assets/images/ball.png");
   this.load.image("paddle", "assets/images/paddle.png");
   this.load.image("brick", "assets/images/brick.png");
+  this.load.image("heart", "assets/images/heart.png");
+  this.load.image("coin", "assets/images/coin.png");
 };
 
 gameScene.create = function() {
@@ -68,11 +70,14 @@ gameScene.create = function() {
   this.cursors = this.input.keyboard.createCursorKeys();
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-  this.scoreText = this.add.text(16, config.height - 30, "000000", this.digitFont);
-  this.lifesText = this.add.text(config.width - 32, config.height - 30, "7", this.digitFont);
+  this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
+  this.lifesText = this.add.text(config.width - 48, config.height - 30, "7", this.digitFont);
 
   this.physics.pause();
-  this.startText = this.add.text(56, 360, "Press space to start", this.rulesFont);
+  this.startText = this.add.text(96, 340, "Press space and\nfeel the gravity…", this.rulesFont);
+
+  this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
+  this.add.image(24, config.height - 18, "coin").setScale(0.7);
 };
 
 gameScene.update = function() {
