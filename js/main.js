@@ -36,7 +36,8 @@ gameScene.init = function() {
 
 gameScene.preload = function() {
   this.load.image("ball", "assets/images/ball.png");
-  this.load.image("paddle", "assets/images/paddle.png");
+  this.load.spritesheet("paddle", "assets/images/paddle_anim.png",
+                        { frameWidth: 152, frameHeight: 48 });
   this.load.image("brick", "assets/images/brick.png");
   this.load.image("heart", "assets/images/heart.png");
   this.load.image("coin", "assets/images/coin.png");
@@ -48,6 +49,8 @@ gameScene.create = function() {
   this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle");
   this.paddle.setSize(152, 64, false);
   this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
+
+  this.createAnimations();
 
   this.ball = this.physics.add.sprite(config.width / 2, 240, "ball");
   this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
@@ -69,7 +72,6 @@ gameScene.create = function() {
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
 };
-
 
 gameScene.update = function() {
   this.physics.add.collider(this.ball, this.paddle, () => {
@@ -98,6 +100,7 @@ gameScene.update = function() {
       if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
         this.cameras.main.flash(500);
         brick.destroy();
+        this.paddle.anims.play("hitByBrick", true);
       }
     });
   });
@@ -119,6 +122,7 @@ gameScene.update = function() {
     this.paddle.setVelocityY(-500);
     this.inPaddleShot = true;
     this.time.delayedCall(200, () => { this.inPaddleShot = false; }, [], this);
+    this.paddle.anims.play("shot", true);
   }
   if (this.paddle.y < config.height - 100) {
     this.paddle.setVelocityY(50);
@@ -192,6 +196,20 @@ gameScene.levelUp = function() {
   this.startText.setText("Level up, press start");
   this.pause = true;
   this.physics.pause();
+};
+
+gameScene.createAnimations = function() {
+  this.anims.create({
+    key: 'shot',
+    frames: this.anims.generateFrameNumbers('paddle', { frames: [1, 2, 1, 0, 3, 0] }),
+    frameRate: 20
+  });
+
+  this.anims.create({
+    key: 'hitByBrick',
+    frames: this.anims.generateFrameNumbers('paddle', { frames: [3, 4, 3, 0, 1, 0] }),
+    frameRate: 20
+  });
 };
 
 gameScene.getShotStrength = function(paddleY) {
