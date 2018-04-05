@@ -24,13 +24,14 @@ gameScene.init = function() {
   this.inPaddleShot = false;
   this.score = 0;
   this.scoreText;
-  this.lifes = 7;
-  this.lifesText;
+  this.lives = 7;
+  this.livesText;
   this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
   this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
   this.pause = true;
   this.startText;
   this.paddleVelocity = 1000;
+  this.gameOverText;
 };
 
 gameScene.preload = function() {
@@ -59,10 +60,11 @@ gameScene.create = function() {
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
   this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
-  this.lifesText = this.add.text(config.width - 48, config.height - 30, "7", this.digitFont);
+  this.livesText = this.add.text(config.width - 48, config.height - 30, "7", this.digitFont);
 
   this.physics.pause();
   this.startText = this.add.text(96, 340, "Press space and\nfeel the gravity…", this.rulesFont);
+  this.gameOverText = this.add.text(200, 340, "", this.rulesFont);
 
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
@@ -122,19 +124,41 @@ gameScene.update = function() {
     this.paddle.setVelocityY(50);
   }
 
-  if (this.ball.y > 580) {
-    this.cameras.main.flash(500);
-    this.lifes--;
-    this.lifesText.setText(this.lifes);
-    if (this.lifes === 0) {
-      this.scene.start("Game");
-    }
-    // Ball reset.
+  this.updatelives();
+};
+
+gameScene.updatelives = function() {
+  let ballReset = () => {
     this.ball.x = config.width / 2;
     this.ball.y = 208;
     this.ball.body.setVelocity(0, 100);
-  }
+  };
 
+  let isBallLeaveScreen = () => { return this.ball.y > 580 };
+
+  let decrementLives = () => {
+    this.cameras.main.flash(500);
+    this.lives--;
+    this.livesText.setText(this.lives);
+  };
+
+  if (isBallLeaveScreen()) {
+    decrementLives();
+    if (this.lives === 0) {
+      this.gameOver();
+    }
+    ballReset();
+  }
+};
+
+gameScene.gameOver = function() {
+  this.gameOverText.setText("Game Over");
+  this.physics.pause();
+  this.cameras.main.fade(2500);
+  this.time.delayedCall(3000, () => {
+    this.cameras.main.resetFX();
+    this.scene.start("Game");
+  });
 };
 
 gameScene.createBricksWall = function() {
