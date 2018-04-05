@@ -30,6 +30,7 @@ gameScene.init = function() {
   this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
   this.pause = true;
   this.startText;
+  this.levelUpText;
   this.paddleVelocity = 1000;
   this.gameOverText;
 };
@@ -68,6 +69,7 @@ gameScene.create = function() {
   this.physics.pause();
   this.startText = this.add.text(96, 340, "Press space and\nfeel the gravity…", this.rulesFont);
   this.gameOverText = this.add.text(200, 340, "", this.rulesFont);
+  this.levelUpText = this.add.text(50, 340, "", this.rulesFont);
 
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
@@ -193,7 +195,7 @@ gameScene.levelUp = function() {
   this.ball.x = config.width / 2;
   this.ball.y = 240;
   this.ball.body.setVelocity(0, 300);
-  this.startText.setText("Level up, press start");
+  this.levelUpText.setText("Level up, press start");
   this.pause = true;
   this.physics.pause();
 };
