@@ -51,23 +51,7 @@ gameScene.create = function() {
   this.ball = this.physics.add.sprite(config.width / 2, 240, "ball");
   this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
 
-  this.staticBricks = this.physics.add.staticGroup({
-    key: "brick",
-    frameQuantity: 28
-  });
-
-  Phaser.Actions.GridAlign(this.staticBricks.getChildren(), {
-    width: 7,
-    height: 4,
-    cellWidth: 80,
-    cellHeight: 48,
-    x: 68,
-    y: 52
-  });
-
-  Phaser.Actions.Call(this.staticBricks.getChildren(), function(brick) {
-    brick.refreshBody();
-  }, this);
+  this.createBricksWall();
 
   this.dynamicBricks = this.physics.add.group();
 
@@ -83,6 +67,7 @@ gameScene.create = function() {
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
 };
+
 
 gameScene.update = function() {
   this.physics.add.collider(this.ball, this.paddle, () => {
@@ -102,7 +87,7 @@ gameScene.update = function() {
     this.scoreText.setText(this.score.toString().padLeft("000000"));
 
     if (this.staticBricks.countActive(true) === 0) {
-      this.scene.start("Game");
+      this.levelUp();
     }
   });
 
@@ -150,6 +135,39 @@ gameScene.update = function() {
     this.ball.body.setVelocity(0, 100);
   }
 
+};
+
+gameScene.createBricksWall = function() {
+  this.staticBricks = this.physics.add.staticGroup({
+    key: "brick",
+    frameQuantity: 28
+  });
+
+  Phaser.Actions.GridAlign(this.staticBricks.getChildren(), {
+    width: 7,
+    height: 4,
+    cellWidth: 80,
+    cellHeight: 48,
+    x: 68,
+    y: 52
+  });
+
+  Phaser.Actions.Call(this.staticBricks.getChildren(), function(brick) {
+    brick.refreshBody();
+  }, this);
+};
+
+gameScene.levelUp = function() {
+  this.createBricksWall();
+  this.paddle.x = config.width / 2;
+  this.paddle.y = config.height - 64;
+  this.paddle.body.setVelocity(0, 20);
+  this.ball.x = config.width / 2;
+  this.ball.y = 240;
+  this.ball.body.setVelocity(0, 300);
+  this.startText.setText("Level up, press start");
+  this.pause = true;
+  this.physics.pause();
 };
 
 gameScene.getShotStrength = function(paddleY) {
