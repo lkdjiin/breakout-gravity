@@ -80,38 +80,15 @@ gameScene.create = function() {
 
 gameScene.update = function() {
   this.physics.add.collider(this.ball, this.paddle, () => {
-    if (this.inPaddleShot) {
-      gSounds.bounce.play(0.5);
-      this.inPaddleShot = false;
-      this.ball.body.setVelocity(-3 * (this.paddle.x - this.ball.x), this.getShotStrength(this.paddle.y));
-    }
+    this.ballHitPaddle.call(this);
   });
 
-  this.physics.add.collider(this.ball, this.staticBricks, (ball, brick) => {
-    let x = brick.x;
-    let y = brick.y;
-
-    gSounds.ballHitBrick.play();
-
-    brick.destroy();
-    this.dynamicBricks.create(x, y, "brick").setGravityY(50);
-    this.score += 10;
-    this.scoreText.setText(this.score.toString().padLeft("000000"));
-
-    if (this.staticBricks.countActive(true) === 0) {
-      this.levelUp();
-    }
+  this.physics.add.collider(this.ball, this.staticBricks, (_, brick) => {
+    this.ballHitBrick(brick);
   });
 
-  this.physics.add.collider(this.paddle, this.dynamicBricks, () => {
-    this.dynamicBricks.getChildren().forEach((brick) => {
-      if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
-        gSounds.brickHitPaddle.play(0.2);
-        this.cameras.main.flash(500);
-        brick.destroy();
-        this.paddle.anims.play("hitByBrick", true);
-      }
-    });
+  this.physics.add.collider(this.paddle, this.dynamicBricks, (_, brick) => {
+    this.brickHitPaddle(brick);
   });
 
   if (this.cursors.left.isDown) {
@@ -140,14 +117,36 @@ gameScene.update = function() {
   this.updatelives();
 };
 
+gameScene.ballHitBrick = function(brick) {
+  gSounds.ballHitBrick.play();
+  this.dynamicBricks.create(brick.x, brick.y, "brick").setGravityY(50);
+  brick.destroy();
+  this.score += 10;
+  this.scoreText.setText(this.score.toString().padLeft("000000"));
+
+  if (this.staticBricks.countActive(true) === 0) {
+    this.levelUp();
+  }
+};
+
+gameScene.brickHitPaddle = function(brick) {
+  if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
+    gSounds.brickHitPaddle.play(0.2);
+    this.cameras.main.flash(500);
+    brick.destroy();
+    this.paddle.anims.play("hitByBrick", true);
+  }
+};
+
+gameScene.ballHitPaddle = function() {
+  if (this.inPaddleShot) {
+    gSounds.bounce.play(0.5);
+    this.inPaddleShot = false;
+    this.ball.body.setVelocity(-3 * (this.paddle.x - this.ball.x), this.getShotStrength(this.paddle.y));
+  }
+};
+
 gameScene.updatelives = function() {
-  let ballReset = () => {
-    this.ball.x = config.width / 2;
-    this.ball.y = 208;
-    this.ball.body.setVelocity(0, 100);
-  };
-
-
   let decrementLives = () => {
     this.cameras.main.flash(500);
     this.lives--;
