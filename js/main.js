@@ -53,8 +53,7 @@ gameScene.create = function() {
 
   this.createAnimations();
 
-  this.ball = this.physics.add.sprite(config.width / 2, 240, "ball");
-  this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
+  this.ball = new Ball(config);
 
   this.createBricksWall();
 
@@ -138,10 +137,6 @@ gameScene.update = function() {
     this.paddle.setVelocityY(50);
   }
 
-  if (this.ball.body.blocked.left || this.ball.body.blocked.right || this.ball.body.blocked.up) {
-    gSounds.bounce.play(0.25);
-  }
-
   this.updatelives();
 };
 
@@ -152,7 +147,6 @@ gameScene.updatelives = function() {
     this.ball.body.setVelocity(0, 100);
   };
 
-  let isBallLeaveScreen = () => { return this.ball.y > 580 };
 
   let decrementLives = () => {
     this.cameras.main.flash(500);
@@ -160,13 +154,13 @@ gameScene.updatelives = function() {
     this.livesText.setText(this.lives);
   };
 
-  if (isBallLeaveScreen()) {
+  if (this.ball.isLeavingScreen()) {
     gSounds.lostLive.play();
     decrementLives();
     if (this.lives === 0) {
       this.gameOver();
     }
-    ballReset();
+    this.ball.reset();
   }
 };
 
@@ -207,9 +201,7 @@ gameScene.levelUp = function() {
   this.paddle.x = config.width / 2;
   this.paddle.y = config.height - 64;
   this.paddle.body.setVelocity(0, 20);
-  this.ball.x = config.width / 2;
-  this.ball.y = 240;
-  this.ball.body.setVelocity(0, 300);
+  this.ball.reset();
   this.levelUpText.setText("Level up, press start");
   this.pause = true;
   this.physics.pause();
