@@ -15,7 +15,7 @@ let config = {
   },
   scene: gameScene,
   title: "Breakout {Gravity}",
-  version: "0.1.0 «Starter»"
+  version: "0.2.0 «Spring»"
 };
 
 let game = new Phaser.Game(config);
@@ -30,13 +30,15 @@ gameScene.init = function() {
   this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
   this.pause = true;
   this.startText;
+  this.levelUpText;
   this.paddleVelocity = 1000;
   this.gameOverText;
 };
 
 gameScene.preload = function() {
   this.load.image("ball", "assets/images/ball.png");
-  this.load.image("paddle", "assets/images/paddle.png");
+  this.load.spritesheet("paddle", "assets/images/paddle_anim.png",
+                        { frameWidth: 152, frameHeight: 48 });
   this.load.image("brick", "assets/images/brick.png");
   this.load.image("heart", "assets/images/heart.png");
   this.load.image("coin", "assets/images/coin.png");
@@ -48,6 +50,8 @@ gameScene.create = function() {
   this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle");
   this.paddle.setSize(152, 64, false);
   this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
+
+  this.createAnimations();
 
   this.ball = this.physics.add.sprite(config.width / 2, 240, "ball");
   this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
@@ -65,15 +69,20 @@ gameScene.create = function() {
   this.physics.pause();
   this.startText = this.add.text(96, 340, "Press space and\nfeel the gravity…", this.rulesFont);
   this.gameOverText = this.add.text(200, 340, "", this.rulesFont);
+  this.levelUpText = this.add.text(50, 340, "", this.rulesFont);
 
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
-};
 
+  // Without a delay, gSounds is not yet created. Anyway the delay is
+  // useful to blend the «game over» sound and this one.
+  this.time.delayedCall(1500, () => { gSounds.newGame.play(); }, [], this);
+};
 
 gameScene.update = function() {
   this.physics.add.collider(this.ball, this.paddle, () => {
     if (this.inPaddleShot) {
+      gSounds.bounce.play(0.5);
       this.inPaddleShot = false;
       this.ball.body.setVelocity(-3 * (this.paddle.x - this.ball.x), this.getShotStrength(this.paddle.y));
     }
@@ -82,6 +91,8 @@ gameScene.update = function() {
   this.physics.add.collider(this.ball, this.staticBricks, (ball, brick) => {
     let x = brick.x;
     let y = brick.y;
+
+    gSounds.ballHitBrick.play();
 
     brick.destroy();
     this.dynamicBricks.create(x, y, "brick").setGravityY(50);
@@ -96,8 +107,10 @@ gameScene.update = function() {
   this.physics.add.collider(this.paddle, this.dynamicBricks, () => {
     this.dynamicBricks.getChildren().forEach((brick) => {
       if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
+        gSounds.brickHitPaddle.play(0.2);
         this.cameras.main.flash(500);
         brick.destroy();
+        this.paddle.anims.play("hitByBrick", true);
       }
     });
   });
@@ -119,9 +132,14 @@ gameScene.update = function() {
     this.paddle.setVelocityY(-500);
     this.inPaddleShot = true;
     this.time.delayedCall(200, () => { this.inPaddleShot = false; }, [], this);
+    this.paddle.anims.play("shot", true);
   }
   if (this.paddle.y < config.height - 100) {
     this.paddle.setVelocityY(50);
+  }
+
+  if (this.ball.body.blocked.left || this.ball.body.blocked.right || this.ball.body.blocked.up) {
+    gSounds.bounce.play(0.25);
   }
 
   this.updatelives();
@@ -143,6 +161,7 @@ gameScene.updatelives = function() {
   };
 
   if (isBallLeaveScreen()) {
+    gSounds.lostLive.play();
     decrementLives();
     if (this.lives === 0) {
       this.gameOver();
@@ -152,6 +171,7 @@ gameScene.updatelives = function() {
 };
 
 gameScene.gameOver = function() {
+  gSounds.gameOver.play();
   this.gameOverText.setText("Game Over");
   this.physics.pause();
   this.cameras.main.fade(2500);
@@ -182,6 +202,7 @@ gameScene.createBricksWall = function() {
 };
 
 gameScene.levelUp = function() {
+  gSounds.levelUp.play(0.5);
   this.createBricksWall();
   this.paddle.x = config.width / 2;
   this.paddle.y = config.height - 64;
@@ -189,9 +210,23 @@ gameScene.levelUp = function() {
   this.ball.x = config.width / 2;
   this.ball.y = 240;
   this.ball.body.setVelocity(0, 300);
-  this.startText.setText("Level up, press start");
+  this.levelUpText.setText("Level up, press start");
   this.pause = true;
   this.physics.pause();
+};
+
+gameScene.createAnimations = function() {
+  this.anims.create({
+    key: 'shot',
+    frames: this.anims.generateFrameNumbers('paddle', { frames: [1, 2, 1, 0, 3, 0] }),
+    frameRate: 20
+  });
+
+  this.anims.create({
+    key: 'hitByBrick',
+    frames: this.anims.generateFrameNumbers('paddle', { frames: [3, 4, 3, 0, 1, 0] }),
+    frameRate: 20
+  });
 };
 
 gameScene.getShotStrength = function(paddleY) {
