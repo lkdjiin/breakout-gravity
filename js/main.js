@@ -73,11 +73,16 @@ gameScene.create = function() {
 
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
+
+  // Without a delay, gSounds is not yet created. Anyway the delay is
+  // useful to blend the «game over» sound and this one.
+  this.time.delayedCall(1500, () => { gSounds.newGame.play(); }, [], this);
 };
 
 gameScene.update = function() {
   this.physics.add.collider(this.ball, this.paddle, () => {
     if (this.inPaddleShot) {
+      gSounds.bounce.play(0.5);
       this.inPaddleShot = false;
       this.ball.body.setVelocity(-3 * (this.paddle.x - this.ball.x), this.getShotStrength(this.paddle.y));
     }
@@ -86,6 +91,8 @@ gameScene.update = function() {
   this.physics.add.collider(this.ball, this.staticBricks, (ball, brick) => {
     let x = brick.x;
     let y = brick.y;
+
+    gSounds.ballHitBrick.play();
 
     brick.destroy();
     this.dynamicBricks.create(x, y, "brick").setGravityY(50);
@@ -100,6 +107,7 @@ gameScene.update = function() {
   this.physics.add.collider(this.paddle, this.dynamicBricks, () => {
     this.dynamicBricks.getChildren().forEach((brick) => {
       if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
+        gSounds.brickHitPaddle.play(0.2);
         this.cameras.main.flash(500);
         brick.destroy();
         this.paddle.anims.play("hitByBrick", true);
@@ -149,6 +157,7 @@ gameScene.updatelives = function() {
   };
 
   if (isBallLeaveScreen()) {
+    gSounds.lostLive.play();
     decrementLives();
     if (this.lives === 0) {
       this.gameOver();
@@ -158,6 +167,7 @@ gameScene.updatelives = function() {
 };
 
 gameScene.gameOver = function() {
+  gSounds.gameOver.play();
   this.gameOverText.setText("Game Over");
   this.physics.pause();
   this.cameras.main.fade(2500);
@@ -188,6 +198,7 @@ gameScene.createBricksWall = function() {
 };
 
 gameScene.levelUp = function() {
+  gSounds.levelUp.play(0.5);
   this.createBricksWall();
   this.paddle.x = config.width / 2;
   this.paddle.y = config.height - 64;
