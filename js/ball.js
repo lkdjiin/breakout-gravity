@@ -1,5 +1,5 @@
 class Ball extends Phaser.Physics.Arcade.Sprite {
-  constructor(config) {
+  constructor() {
     super(config.scene, config.width / 2, 240, "ball");
     this.bottomLimit = config.height - 40;
     this.scene.physics.world.enable(this);
@@ -8,6 +8,7 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
     this.setBounce(0.99);
     this.setCollideWorldBounds(true);
     this.scene.events.on('update', this.update, this);
+    this.scene.events.on("ballhitpaddle", this.ballHitPaddleEvent, this);
   }
 
   update() {
@@ -24,5 +25,9 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
 
   isLeavingScreen() {
     return this.y > this.bottomLimit;
+  }
+
+  ballHitPaddleEvent(ballX, paddleX, strength) {
+    this.body.setVelocity(-3 * (paddleX - ballX), strength);
   }
 }
