@@ -21,7 +21,6 @@ let config = {
 let game = new Phaser.Game(config);
 
 gameScene.init = function() {
-  this.inPaddleShot = false;
   this.score = 0;
   this.scoreText;
   this.lives = 7;
@@ -31,7 +30,6 @@ gameScene.init = function() {
   this.pause = true;
   this.startText;
   this.levelUpText;
-  this.paddleVelocity = 1000;
   this.gameOverText;
 };
 
@@ -47,19 +45,17 @@ gameScene.preload = function() {
 gameScene.create = function() {
   displayVersion();
 
-  this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle");
-  this.paddle.setSize(152, 64, false);
-  this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
+  this.cursors = this.input.keyboard.createCursorKeys();
+
+  this.paddle = new Paddle();
+  this.ball = new Ball();
 
   this.createAnimations();
-
-  this.ball = new Ball(config);
 
   this.createBricksWall();
 
   this.dynamicBricks = this.physics.add.group();
 
-  this.cursors = this.input.keyboard.createCursorKeys();
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
   this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
@@ -91,27 +87,13 @@ gameScene.update = function() {
     this.brickHitPaddle(brick);
   });
 
-  if (this.cursors.left.isDown) {
-    this.paddle.setVelocityX(-this.paddleVelocity);
-  } else if (this.cursors.right.isDown) {
-    this.paddle.setVelocityX(this.paddleVelocity);
-  } else {
-    this.paddle.setVelocityX(0);
-  }
-
-  if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.y > config.height - 100) {
+  if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.canShot) {
     if (this.pause) {
       this.startText.setText("");
       this.physics.resume();
       this.pause = false;
     }
-    this.paddle.setVelocityY(-500);
-    this.inPaddleShot = true;
-    this.time.delayedCall(200, () => { this.inPaddleShot = false; }, [], this);
-    this.paddle.anims.play("shot", true);
-  }
-  if (this.paddle.y < config.height - 100) {
-    this.paddle.setVelocityY(50);
+    this.paddle.shoot();
   }
 
   this.updatelives();
@@ -130,19 +112,16 @@ gameScene.ballHitBrick = function(brick) {
 };
 
 gameScene.brickHitPaddle = function(brick) {
-  if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
-    gSounds.brickHitPaddle.play(0.2);
-    this.cameras.main.flash(500);
-    brick.destroy();
-    this.paddle.anims.play("hitByBrick", true);
-  }
+  gSounds.brickHitPaddle.play(0.2);
+  this.events.emit("brickhitpaddle");
+  this.cameras.main.flash(500);
+  brick.destroy();
 };
 
 gameScene.ballHitPaddle = function() {
-  if (this.inPaddleShot) {
+  if (this.paddle.isShooting) {
     gSounds.bounce.play(0.5);
-    this.inPaddleShot = false;
-    this.ball.body.setVelocity(-3 * (this.paddle.x - this.ball.x), this.getShotStrength(this.paddle.y));
+    this.events.emit("ballhitpaddle", this.ball.x, this.paddle.x, this.paddle.shotStrength);
   }
 };
 
@@ -197,9 +176,7 @@ gameScene.createBricksWall = function() {
 gameScene.levelUp = function() {
   gSounds.levelUp.play(0.5);
   this.createBricksWall();
-  this.paddle.x = config.width / 2;
-  this.paddle.y = config.height - 64;
-  this.paddle.body.setVelocity(0, 20);
+  this.paddle.reset();
   this.ball.reset();
   this.levelUpText.setText("Level up, press start");
   this.pause = true;
@@ -218,16 +195,6 @@ gameScene.createAnimations = function() {
     frames: this.anims.generateFrameNumbers('paddle', { frames: [3, 4, 3, 0, 1, 0] }),
     frameRate: 20
   });
-};
-
-gameScene.getShotStrength = function(paddleY) {
-  // Paddle Y coordinate can be between 576 and 518 (that is a range of 58).
-  // At Y=576 we want the weaker shot strength (ball will get Y velocity = -450).
-  // At Y=518 we want the stronger shot strength (ball will get Y velocity = -650).
-
-  let delta = 576 - paddleY;
-  let ratio = delta / 58.0;
-  return -(ratio * 200 + 450);
 };
 
 function displayVersion() {
