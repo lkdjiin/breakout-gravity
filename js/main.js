@@ -138,6 +138,10 @@ gameScene.update = function() {
     this.paddle.setVelocityY(50);
   }
 
+  if (this.ball.body.blocked.left || this.ball.body.blocked.right || this.ball.body.blocked.up) {
+    gSounds.bounce.play(0.25);
+  }
+
   this.updatelives();
 };
 
