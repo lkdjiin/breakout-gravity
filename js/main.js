@@ -38,19 +38,19 @@ gameScene.preload = function() {
   this.load.image("brick", "assets/images/brick.png");
   this.load.image("heart", "assets/images/heart.png");
   this.load.image("coin", "assets/images/coin.png");
+  this.load.image("star", "assets/images/bg-star.png");
 };
 
 gameScene.create = function() {
   displayVersion();
 
+  this.backgroundStars = new StarryBackground();
   this.cursors = this.input.keyboard.createCursorKeys();
-
   this.paddle = new Paddle();
   this.ball = new Ball();
   this.lives = new Lives();
 
   this.createAnimations();
-
   this.createBricksWall();
 
   this.dynamicBricks = this.physics.add.group();
