@@ -24,11 +24,10 @@ gameScene.init = function() {
   this.score = 0;
   this.scoreText;
   this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
-  this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
+  this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd",
+                     fontStyle: "italic", align: "center" };
   this.pause = true;
-  this.startText;
-  this.levelUpText;
-  this.gameOverText;
+  this.info;
 };
 
 gameScene.preload = function() {
@@ -60,9 +59,13 @@ gameScene.create = function() {
   this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
 
   this.physics.pause();
-  this.startText = this.add.text(96, 340, "Press space and\nfeel the gravity…", this.rulesFont);
-  this.gameOverText = this.add.text(200, 340, "", this.rulesFont);
-  this.levelUpText = this.add.text(50, 340, "", this.rulesFont);
+
+  this.info = this.add.text(
+    config.width / 2,
+    config.height / 2,
+    "Press space and\nbeat the gravity",
+    this.rulesFont
+  ).setOrigin(0.5, 0.5);
 
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
@@ -90,7 +93,7 @@ gameScene.update = function() {
 
   if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.canShot) {
     if (this.pause) {
-      this.startText.setText("");
+      this.info.setText("");
       this.physics.resume();
       this.pause = false;
     }
@@ -130,7 +133,7 @@ gameScene.ballHitPaddle = function() {
 
 gameScene.gameOver = function() {
   gSounds.gameOver.play();
-  this.gameOverText.setText("Game Over");
+  this.info.setText("Game Over");
   this.physics.pause();
   this.cameras.main.fade(2500);
   this.time.delayedCall(3000, () => {
@@ -164,7 +167,7 @@ gameScene.levelUp = function() {
   this.createBricksWall();
   this.paddle.reset();
   this.ball.reset();
-  this.levelUpText.setText("Level up, press start");
+  this.info.setText("Level up,\npress start");
   this.pause = true;
   this.physics.pause();
 };
