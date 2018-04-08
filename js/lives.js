@@ -11,6 +11,7 @@ class Lives extends Phaser.GameObjects.GameObject {
                                     this.remaining, this.scene.digitFont);
 
     this.scene.events.on("ballleavesscreen", this.ballLeaveScreenEvent, this);
+    this.scene.events.on("brokenpaddle", this.lost, this);
   }
 
   decrement() {
@@ -25,10 +26,14 @@ class Lives extends Phaser.GameObjects.GameObject {
   }
 
   ballLeaveScreenEvent() {
+    this.lost();
+    this.scene.events.emit("ballreset");
+  }
+
+  lost() {
     this.decrement();
     if (this.isZero) {
       this.scene.events.emit("gameover");
     }
-    this.scene.events.emit("ballreset");
   }
 }
