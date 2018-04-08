@@ -5,6 +5,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.speed = 1000;
     this.shotLimit = config.height - 100;
     this.isShooting = false;
+    this.damageLevel = 0;
 
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -60,6 +61,25 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
   brickHitPaddleEvent() {
     this.anims.play("hitByBrick", true);
+    this.damageLevel++;
+    if (this.damageLevel === 4) {
+      this.scene.events.emit("brokenpaddle");
+      this.damageLevel = 0;
+    }
+    switch (this.damageLevel) {
+      case 0:
+        this.clearTint();
+        break;
+      case 1:
+        this.setTint(0xffaaaa);
+        break;
+      case 2:
+        this.setTint(0xff6666);
+        break;
+      case 3:
+        this.setTint(0xff0000);
+        break;
+    }
   }
 
   get shotStrength() {
