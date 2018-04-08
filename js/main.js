@@ -134,6 +134,7 @@ gameScene.ballHitPaddle = function() {
 gameScene.gameOver = function() {
   gSounds.gameOver.play();
   this.info.setText("Game Over");
+  this.staticBricks.clear();
   this.physics.pause();
   this.cameras.main.fade(2500);
   this.time.delayedCall(3000, () => {
