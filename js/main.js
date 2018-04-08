@@ -21,7 +21,6 @@ let config = {
 let game = new Phaser.Game(config);
 
 gameScene.init = function() {
-  this.inPaddleShot = false;
   this.score = 0;
   this.scoreText;
   this.lives = 7;
@@ -31,7 +30,6 @@ gameScene.init = function() {
   this.pause = true;
   this.startText;
   this.levelUpText;
-  this.paddleVelocity = 1000;
   this.gameOverText;
 };
 
@@ -47,20 +45,17 @@ gameScene.preload = function() {
 gameScene.create = function() {
   displayVersion();
 
-  this.paddle = this.physics.add.sprite(config.width / 2, config.height - 64, "paddle");
-  this.paddle.setSize(152, 64, false);
-  this.paddle.body.setVelocity(0, 20).setBounce(0.2).setCollideWorldBounds(true);
+  this.cursors = this.input.keyboard.createCursorKeys();
+
+  this.paddle = new Paddle();
+  this.ball = new Ball();
 
   this.createAnimations();
-
-  this.ball = this.physics.add.sprite(config.width / 2, 240, "ball");
-  this.ball.body.setVelocity(0, 300).setBounce(0.99).setCollideWorldBounds(true);
 
   this.createBricksWall();
 
   this.dynamicBricks = this.physics.add.group();
 
-  this.cursors = this.input.keyboard.createCursorKeys();
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
   this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
@@ -81,92 +76,69 @@ gameScene.create = function() {
 
 gameScene.update = function() {
   this.physics.add.collider(this.ball, this.paddle, () => {
-    if (this.inPaddleShot) {
-      gSounds.bounce.play(0.5);
-      this.inPaddleShot = false;
-      this.ball.body.setVelocity(-3 * (this.paddle.x - this.ball.x), this.getShotStrength(this.paddle.y));
-    }
+    this.ballHitPaddle.call(this);
   });
 
-  this.physics.add.collider(this.ball, this.staticBricks, (ball, brick) => {
-    let x = brick.x;
-    let y = brick.y;
-
-    gSounds.ballHitBrick.play();
-
-    brick.destroy();
-    this.dynamicBricks.create(x, y, "brick").setGravityY(50);
-    this.score += 10;
-    this.scoreText.setText(this.score.toString().padLeft("000000"));
-
-    if (this.staticBricks.countActive(true) === 0) {
-      this.levelUp();
-    }
+  this.physics.add.collider(this.ball, this.staticBricks, (_, brick) => {
+    this.ballHitBrick(brick);
   });
 
-  this.physics.add.collider(this.paddle, this.dynamicBricks, () => {
-    this.dynamicBricks.getChildren().forEach((brick) => {
-      if (Phaser.Geom.Intersects.RectangleToRectangle(this.paddle.getBounds(), brick.getBounds())) {
-        gSounds.brickHitPaddle.play(0.2);
-        this.cameras.main.flash(500);
-        brick.destroy();
-        this.paddle.anims.play("hitByBrick", true);
-      }
-    });
+  this.physics.add.collider(this.paddle, this.dynamicBricks, (_, brick) => {
+    this.brickHitPaddle(brick);
   });
 
-  if (this.cursors.left.isDown) {
-    this.paddle.setVelocityX(-this.paddleVelocity);
-  } else if (this.cursors.right.isDown) {
-    this.paddle.setVelocityX(this.paddleVelocity);
-  } else {
-    this.paddle.setVelocityX(0);
-  }
-
-  if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.y > config.height - 100) {
+  if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.canShot) {
     if (this.pause) {
       this.startText.setText("");
       this.physics.resume();
       this.pause = false;
     }
-    this.paddle.setVelocityY(-500);
-    this.inPaddleShot = true;
-    this.time.delayedCall(200, () => { this.inPaddleShot = false; }, [], this);
-    this.paddle.anims.play("shot", true);
-  }
-  if (this.paddle.y < config.height - 100) {
-    this.paddle.setVelocityY(50);
-  }
-
-  if (this.ball.body.blocked.left || this.ball.body.blocked.right || this.ball.body.blocked.up) {
-    gSounds.bounce.play(0.25);
+    this.paddle.shoot();
   }
 
   this.updatelives();
 };
 
+gameScene.ballHitBrick = function(brick) {
+  gSounds.ballHitBrick.play();
+  this.dynamicBricks.create(brick.x, brick.y, "brick").setGravityY(50);
+  brick.destroy();
+  this.score += 10;
+  this.scoreText.setText(this.score.toString().padLeft("000000"));
+
+  if (this.staticBricks.countActive(true) === 0) {
+    this.levelUp();
+  }
+};
+
+gameScene.brickHitPaddle = function(brick) {
+  gSounds.brickHitPaddle.play(0.2);
+  this.events.emit("brickhitpaddle");
+  this.cameras.main.flash(500);
+  brick.destroy();
+};
+
+gameScene.ballHitPaddle = function() {
+  if (this.paddle.isShooting) {
+    gSounds.bounce.play(0.5);
+    this.events.emit("ballhitpaddle", this.ball.x, this.paddle.x, this.paddle.shotStrength);
+  }
+};
+
 gameScene.updatelives = function() {
-  let ballReset = () => {
-    this.ball.x = config.width / 2;
-    this.ball.y = 208;
-    this.ball.body.setVelocity(0, 100);
-  };
-
-  let isBallLeaveScreen = () => { return this.ball.y > 580 };
-
   let decrementLives = () => {
     this.cameras.main.flash(500);
     this.lives--;
     this.livesText.setText(this.lives);
   };
 
-  if (isBallLeaveScreen()) {
+  if (this.ball.isLeavingScreen()) {
     gSounds.lostLive.play();
     decrementLives();
     if (this.lives === 0) {
       this.gameOver();
     }
-    ballReset();
+    this.ball.reset();
   }
 };
 
@@ -204,12 +176,8 @@ gameScene.createBricksWall = function() {
 gameScene.levelUp = function() {
   gSounds.levelUp.play(0.5);
   this.createBricksWall();
-  this.paddle.x = config.width / 2;
-  this.paddle.y = config.height - 64;
-  this.paddle.body.setVelocity(0, 20);
-  this.ball.x = config.width / 2;
-  this.ball.y = 240;
-  this.ball.body.setVelocity(0, 300);
+  this.paddle.reset();
+  this.ball.reset();
   this.levelUpText.setText("Level up, press start");
   this.pause = true;
   this.physics.pause();
@@ -227,16 +195,6 @@ gameScene.createAnimations = function() {
     frames: this.anims.generateFrameNumbers('paddle', { frames: [3, 4, 3, 0, 1, 0] }),
     frameRate: 20
   });
-};
-
-gameScene.getShotStrength = function(paddleY) {
-  // Paddle Y coordinate can be between 576 and 518 (that is a range of 58).
-  // At Y=576 we want the weaker shot strength (ball will get Y velocity = -450).
-  // At Y=518 we want the stronger shot strength (ball will get Y velocity = -650).
-
-  let delta = 576 - paddleY;
-  let ratio = delta / 58.0;
-  return -(ratio * 200 + 450);
 };
 
 function displayVersion() {
