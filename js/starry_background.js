@@ -11,8 +11,8 @@ class StarryBackground extends Phaser.Physics.Arcade.Group {
       star.y = parseInt(Math.random() * config.height);
       star.body.allowGravity = false;
       star.alpha = Math.random();
-      star.setVelocityY(Math.random() * 10 + 2);
-      star.setScale(Math.random());
+      star.setVelocityY(this.velocity);
+      star.setScale(this.scale);
     }, this);
 
     this.scene.events.on('update', this.update, this);
@@ -24,9 +24,17 @@ class StarryBackground extends Phaser.Physics.Arcade.Group {
         star.x = parseInt(Math.random() * config.width);
         star.y = -5;
         star.alpha = Math.random();
-        star.setVelocityY(Math.random() * 10 + 2);
-        star.setScale(Math.random());
+        star.setVelocityY(this.velocity);
+        star.setScale(this.scale);
       }
     }, this);
+  }
+
+  get scale() {
+    return Math.random() * 0.5;
+  }
+
+  get velocity() {
+    return Math.random() * 12;
   }
 }
