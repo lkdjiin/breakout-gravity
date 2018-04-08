@@ -23,8 +23,6 @@ let game = new Phaser.Game(config);
 gameScene.init = function() {
   this.score = 0;
   this.scoreText;
-  this.lives = 7;
-  this.livesText;
   this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
   this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd", fontStyle: "italic" };
   this.pause = true;
@@ -49,6 +47,7 @@ gameScene.create = function() {
 
   this.paddle = new Paddle();
   this.ball = new Ball();
+  this.lives = new Lives();
 
   this.createAnimations();
 
@@ -59,7 +58,6 @@ gameScene.create = function() {
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
   this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
-  this.livesText = this.add.text(config.width - 48, config.height - 30, "7", this.digitFont);
 
   this.physics.pause();
   this.startText = this.add.text(96, 340, "Press space and\nfeel the gravity…", this.rulesFont);
@@ -72,6 +70,9 @@ gameScene.create = function() {
   // Without a delay, gSounds is not yet created. Anyway the delay is
   // useful to blend the «game over» sound and this one.
   this.time.delayedCall(1500, () => { gSounds.newGame.play(); }, [], this);
+
+  this.events.on("gameover", this.gameOver, this);
+  this.events.on("ballreset", () => { this.ball.reset(); }, this);
 };
 
 gameScene.update = function() {
@@ -96,7 +97,9 @@ gameScene.update = function() {
     this.paddle.shoot();
   }
 
-  this.updatelives();
+  if (this.ball.isLeavingScreen()) {
+    this.events.emit("ballleavesscreen");
+  }
 };
 
 gameScene.ballHitBrick = function(brick) {
@@ -122,23 +125,6 @@ gameScene.ballHitPaddle = function() {
   if (this.paddle.isShooting) {
     gSounds.bounce.play(0.5);
     this.events.emit("ballhitpaddle", this.ball.x, this.paddle.x, this.paddle.shotStrength);
-  }
-};
-
-gameScene.updatelives = function() {
-  let decrementLives = () => {
-    this.cameras.main.flash(500);
-    this.lives--;
-    this.livesText.setText(this.lives);
-  };
-
-  if (this.ball.isLeavingScreen()) {
-    gSounds.lostLive.play();
-    decrementLives();
-    if (this.lives === 0) {
-      this.gameOver();
-    }
-    this.ball.reset();
   }
 };
 
