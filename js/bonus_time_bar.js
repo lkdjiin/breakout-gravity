@@ -1,6 +1,6 @@
 class BonusTimeBar extends Phaser.GameObjects.Graphics {
   constructor(bonus) {
-    super(config.scene, { lineStyle: { width: 4, color: 0xaa00aa } });
+    super(config.scene[0], { lineStyle: { width: 4, color: 0xaa00aa } });
 
     this.bonus = bonus;
     this.zoom = 3;

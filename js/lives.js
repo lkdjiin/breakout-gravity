@@ -1,6 +1,6 @@
 class Lives extends Phaser.GameObjects.GameObject {
   constructor() {
-    super(config.scene, "lives");
+    super(config.scene[0], "lives");
 
     this.worldWidth = config.width;
     this.worldHeight = config.height;

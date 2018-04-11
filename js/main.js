@@ -11,7 +11,7 @@ let config = {
       debug: false
     }
   },
-  scene: gameScene,
+  scene: [gameScene, bonusTimeScene],
   title: "Breakout {Gravity}",
   version: "0.2.0 «Spring»"
 };

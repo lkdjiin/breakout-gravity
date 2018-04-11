@@ -1,6 +1,6 @@
 class BonusTime extends Phaser.GameObjects.GameObject {
   constructor(time) {
-    super(config.scene, "bonusTime");
+    super(config.scene[0], "bonusTime");
 
     this.remaining = time;
     this.now = Date.now();
@@ -18,5 +18,10 @@ class BonusTime extends Phaser.GameObjects.GameObject {
 
   get bonus() {
     return this.remaining;
+  }
+
+  set bonus(value) {
+    this.remaining = value;
+    this.now = Date.now();
   }
 }

@@ -92,11 +92,15 @@ gameScene.ballHitBrick = function(brick) {
   this.dynamicBricks.create(brick.x, brick.y, "brick").setGravityY(50);
   brick.destroy();
   this.score += 10;
-  this.scoreText.setText(this.score.toString().padLeft("000000"));
+  this.updateScore();
 
   if (this.staticBricks.countActive(true) === 0) {
     this.levelUp();
   }
+};
+
+gameScene.updateScore = function() {
+  this.scoreText.setText(this.score.toString().padLeft("000000"));
 };
 
 gameScene.brickHitPaddle = function(brick) {
@@ -152,8 +156,8 @@ gameScene.levelUp = function() {
   this.ball.reset();
   this.pause = true;
   this.physics.pause();
-
   this.manageBonusTime();
+  this.updateScore();
   this.info.setText("Level up,\npress space");
 };
 
@@ -173,8 +177,9 @@ gameScene.createAnimations = function() {
 
 gameScene.manageBonusTime = function() {
   let bonus = this.bonusTime.bonus * 100;
-  this.info.setText("Bonus: " + this.bonusTime.bonus + " x 100 = " + bonus);
   this.score += bonus;
-  // this.input.keyboard.enabled = false;
-  // this.time.delayedCall(3000, () => { this.input.keyboard.enabled = true; }, [], this);
+
+  this.scene.pause();
+  this.scene.launch("BonusTime", {time: this.bonusTime.bonus, points: 100});
+  this.bonusTime.bonus = 90;
 };

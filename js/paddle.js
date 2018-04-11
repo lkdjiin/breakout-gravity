@@ -1,6 +1,6 @@
 class Paddle extends Phaser.Physics.Arcade.Sprite {
   constructor() {
-    super(config.scene, config.width / 2, config.height - 64, "paddle");
+    super(config.scene[0], config.width / 2, config.height - 64, "paddle");
 
     this.speed = 1000;
     this.shotLimit = config.height - 100;

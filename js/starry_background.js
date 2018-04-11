@@ -1,7 +1,7 @@
 class StarryBackground extends Phaser.Physics.Arcade.Group {
 
   constructor() {
-    super(config.scene.physics.world, config.scene, [], {
+    super(config.scene[0].physics.world, config.scene[0], [], {
       key: "star",
       frameQuantity: 11
     });

@@ -1,6 +1,6 @@
 class Ball extends Phaser.Physics.Arcade.Sprite {
   constructor() {
-    super(config.scene, config.width / 2, 240, "ball");
+    super(config.scene[0], config.width / 2, 240, "ball");
     this.bottomLimit = config.height - 40;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
