@@ -27,6 +27,9 @@ bonusTimeScene.create = function(data) {
 
 bonusTimeScene.update = function() {
   if (this.bonusTime > 0 && Date.now() >= this.now + 100) {
+    if (typeof gSounds.ballHitBrick != "undefined") {
+      gSounds.ballHitBrick.play(0.5);
+    }
     this.now = Date.now();
     this.bonusTime--;
     this.total += this.bonusPoints;
