@@ -1,11 +1,17 @@
+
 class Paddle extends Phaser.Physics.Arcade.Sprite {
   constructor() {
     super(config.scene[0], config.width / 2, config.height - 64, "paddle");
+
+    this.PADDLE_SIZE = Object.freeze({ normal: "normal", small: "small" });
 
     this.speed = 1000;
     this.shotLimit = config.height - 100;
     this.isShooting = false;
     this.damageLevel = 0;
+    this.key = this.scene.cursors;
+    this.state = { size: this.PADDLE_SIZE.normal };
+    this.sizeChangedTime = Date.now();
 
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -21,9 +27,14 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    if (this.scene.cursors.left.isDown) {
+    this.updateVelocity();
+    this.updateSize();
+  }
+
+  updateVelocity() {
+    if (this.key.left.isDown) {
       this.setVelocityX(-this.speed);
-    } else if (this.scene.cursors.right.isDown) {
+    } else if (this.key.right.isDown) {
       this.setVelocityX(this.speed);
     } else {
       this.body.velocity.x *= 0.7;
@@ -34,6 +45,19 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     if (this.isAboveShotLimit) {
       this.setVelocityY(50);
+    }
+  }
+
+  updateSize() {
+    if (this.key.down.isDown && Date.now() > this.sizeChangedTime + 500) {
+      this.sizeChangedTime = Date.now();
+      if (this.state.size == this.PADDLE_SIZE.normal) {
+        this.state.size = this.PADDLE_SIZE.small;
+        this.setScale(0.5, 1);
+      } else if (this.state.size == this.PADDLE_SIZE.small) {
+        this.state.size = this.PADDLE_SIZE.normal;
+        this.setScale(1);
+      }
     }
   }
 
