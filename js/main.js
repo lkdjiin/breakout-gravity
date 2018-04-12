@@ -11,7 +11,7 @@ let config = {
       debug: false
     }
   },
-  scene: [gameScene, bonusTimeScene],
+  scene: [gameScene, bonusTimeScene, highScoreScene],
   title: "Breakout {Gravity}",
   version: "0.3.0 «Mozart»"
 };

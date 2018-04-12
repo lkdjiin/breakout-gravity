@@ -3,7 +3,6 @@ let bonusTimeScene = new Phaser.Scene("BonusTime");
 bonusTimeScene.init = function() {
   this.rulesFont = { fontFamily: "Courier", fontSize: "32px", fill: "#eee",
                      align: "center" };
-  this.isNotDone = true;
   this.state = 1;
 };
 
@@ -44,8 +43,7 @@ bonusTimeScene.create = function(data) {
 bonusTimeScene.update = function() {
   if (this.state == 1) {
     this.createBackground();
-  }
-  else if (this.state == 2) {
+  } else if (this.state == 2) {
     this.computeBonus();
   } else if (this.state == 3) {
     this.removeBackground();

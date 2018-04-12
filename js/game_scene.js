@@ -122,11 +122,8 @@ gameScene.gameOver = function() {
   this.info.setText("Game Over");
   this.staticBricks.clear();
   this.physics.pause();
-  this.cameras.main.fade(2500);
-  this.time.delayedCall(3000, () => {
-    this.cameras.main.resetFX();
-    this.scene.start("Game");
-  });
+  this.scene.pause();
+  this.scene.launch("HighScore", {score: this.score.toString().padLeft("000000")});
 };
 
 gameScene.createBricksWall = function() {
