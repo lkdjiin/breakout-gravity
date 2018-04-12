@@ -26,7 +26,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     } else if (this.scene.cursors.right.isDown) {
       this.setVelocityX(this.speed);
     } else {
-      this.setVelocityX(0);
+      this.body.velocity.x *= 0.7;
+      if (this.body.velocity.x < 10 && this.body.velocity.x > -10) {
+        this.setVelocityX(0);
+      }
     }
 
     if (this.isAboveShotLimit) {
