@@ -123,7 +123,7 @@ gameScene.gameOver = function() {
   this.staticBricks.clear();
   this.physics.pause();
   this.scene.pause();
-  this.scene.launch("HighScore", {score: this.score.toString().padLeft("000000")});
+  this.scene.launch("HighScore", {score: this.score});
 };
 
 gameScene.createBricksWall = function() {

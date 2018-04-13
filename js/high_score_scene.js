@@ -13,6 +13,8 @@ highScoreScene.preload = function() {
 highScoreScene.create = function(data) {
   this.score = data.score;
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  this.highScores = new HighScores();
+  this.highScores.add(this.score);
 };
 
 highScoreScene.update = function() {
@@ -42,7 +44,10 @@ highScoreScene.displayHighScore = function() {
   this.info = this.add.text(
     config.width / 2,
     config.height / 2,
-    "HIGH SCORES\n(soon)\n\nYour score: " + this.score + "\n\n\n(press space)",
+    "HIGH SCORES\n\n" + this.highScores.toString() +
+                        "\n\nYour score: " +
+                        this.score +
+                        "\n\n\n(press space)",
     this.rulesFont
   ).setOrigin(0.5, 0.5);
 };
