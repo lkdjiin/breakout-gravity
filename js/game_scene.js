@@ -6,7 +6,7 @@ gameScene.init = function() {
   this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
   this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd",
                      fontStyle: "italic", align: "center" };
-  this.pause = true;
+  this.isPaused = true;
   this.info;
 };
 
@@ -35,6 +35,7 @@ gameScene.create = function() {
   this.dynamicBricks = this.physics.add.group();
 
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
   this.scoreText = this.add.text(40, config.height - 30, "000000", this.digitFont);
 
@@ -74,17 +75,35 @@ gameScene.update = function() {
   });
 
   if (Phaser.Input.Keyboard.JustDown(this.spacebar) && this.paddle.canShot) {
-    if (this.pause) {
-      this.info.setText("");
-      this.physics.resume();
-      this.pause = false;
+    if (this.isPaused) {
+      this.resume();
     }
     this.paddle.shoot();
+  }
+
+  if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
+    if (!this.isPaused) {
+      this.pause();
+    } else {
+      this.resume();
+    }
   }
 
   if (this.ball.isLeavingScreen()) {
     this.events.emit("ballleavesscreen");
   }
+};
+
+gameScene.pause = function() {
+  this.isPaused = true;
+  this.physics.pause();
+  this.info.setText("Game paused\n\nPress P to resume");
+};
+
+gameScene.resume = function() {
+  this.info.setText("");
+  this.physics.resume();
+  this.isPaused = false;
 };
 
 gameScene.ballHitBrick = function(brick) {
@@ -151,7 +170,7 @@ gameScene.levelUp = function() {
   this.createBricksWall();
   this.paddle.reset();
   this.ball.reset();
-  this.pause = true;
+  this.isPaused = true;
   this.physics.pause();
   this.manageBonusTime();
   this.updateScore();

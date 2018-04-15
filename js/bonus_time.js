@@ -10,7 +10,7 @@ class BonusTime extends Phaser.GameObjects.GameObject {
   }
 
   update() {
-    if (!this.scene.pause && Date.now() >= this.now + 1000) {
+    if (!this.scene.isPaused && Date.now() >= this.now + 1000) {
       this.now = Date.now();
       this.remaining--;
     }
