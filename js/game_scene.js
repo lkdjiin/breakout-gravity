@@ -108,13 +108,22 @@ gameScene.resume = function() {
 
 gameScene.ballHitBrick = function(brick) {
   gSounds.ballHitBrick.play();
-  this.dynamicBricks.create(brick.x, brick.y, "brick").setGravityY(50);
+  this.createBonusMalus(brick.x, brick.y);
   brick.destroy();
   this.score += 10;
   this.updateScore();
-
   if (this.staticBricks.countActive(true) === 0) {
     this.levelUp();
+  }
+};
+
+gameScene.createBonusMalus = function(x, y) {
+  let brick = this.dynamicBricks.create(x, y, "brick").setGravityY(50);
+  let rnd = Math.random();
+  if (rnd < 0.2) {
+    brick.setTint(0x00ff00);
+  } else if (rnd < 0.4) {
+    brick.setTint(0xff0000);
   }
 };
 
