@@ -85,7 +85,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.isShooting = false;
   }
 
-  brickHitPaddleEvent() {
+  brickHitPaddleEvent(brick) {
+    if (brick.meta.bonus || brick.meta.malus) {
+      return;
+    }
+
     this.anims.play("hitByBrick", true);
     this.damageLevel++;
     if (this.damageLevel === 4) {

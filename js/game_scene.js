@@ -108,13 +108,30 @@ gameScene.resume = function() {
 
 gameScene.ballHitBrick = function(brick) {
   gSounds.ballHitBrick.play();
-  this.dynamicBricks.create(brick.x, brick.y, "brick").setGravityY(50);
+  this.createBonusMalus(brick.x, brick.y);
   brick.destroy();
   this.score += 10;
   this.updateScore();
-
   if (this.staticBricks.countActive(true) === 0) {
     this.levelUp();
+  }
+};
+
+gameScene.createBonusMalus = function(x, y) {
+  let brick = this.dynamicBricks.create(x, y, "brick").setGravityY(50);
+  let rnd = Math.random();
+
+  brick.meta = {
+    bonus: false,
+    malus: false
+  };
+
+  if (rnd < 0.1) {
+    brick.setTint(0x00ff00);
+    brick.meta.bonus = true;
+  } else if (rnd < 0.3) {
+    brick.setTint(0xff0000);
+    brick.meta.malus = true;
   }
 };
 
@@ -123,9 +140,16 @@ gameScene.updateScore = function() {
 };
 
 gameScene.brickHitPaddle = function(brick) {
-  gSounds.brickHitPaddle.play(0.2);
-  this.events.emit("brickhitpaddle");
-  this.cameras.main.flash(500);
+  if (brick.meta.bonus) {
+    this.lives.addOne();
+  } else if (brick.meta.malus) {
+    this.lives.lost();
+  } else {
+    gSounds.brickHitPaddle.play(0.2);
+    this.cameras.main.flash(500);
+  }
+
+  this.events.emit("brickhitpaddle", brick);
   brick.destroy();
 };
 
