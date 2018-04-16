@@ -13,7 +13,7 @@ let config = {
   },
   scene: [gameScene, bonusTimeScene, highScoreScene],
   title: "Breakout {Gravity}",
-  version: "0.4.0 «High»"
+  version: "0.5.0 «Hocus Bonus»"
 };
 
 let game = new Phaser.Game(config);
