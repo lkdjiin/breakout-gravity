@@ -15,13 +15,19 @@ gameScene.preload = function() {
   this.load.spritesheet("paddle", "assets/images/paddle_anim.png",
                         { frameWidth: 152, frameHeight: 48 });
   this.load.image("brick", "assets/images/brick.png");
+  this.load.image("brick2", "assets/images/brick2.png");
   this.load.image("heart", "assets/images/heart.png");
   this.load.image("coin", "assets/images/coin.png");
   this.load.image("star", "assets/images/bg-star.png");
+  this.load.image("bg01", "assets/images/bg-image-01.jpg");
+  this.load.image("bg02", "assets/images/bg-image-02.jpg");
 };
 
 gameScene.create = function() {
   displayVersion();
+
+  let levels = [Level01, Level02];
+  this.levelManager = new LevelManager(levels);
 
   this.backgroundStars = new StarryBackground();
   this.cursors = this.input.keyboard.createCursorKeys();
@@ -30,8 +36,6 @@ gameScene.create = function() {
   this.lives = new Lives();
 
   this.createAnimations();
-  this.createBricksWall();
-
   this.dynamicBricks = this.physics.add.group();
 
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -108,17 +112,24 @@ gameScene.resume = function() {
 
 gameScene.ballHitBrick = function(brick) {
   gSounds.ballHitBrick.play();
-  this.createBonusMalus(brick.x, brick.y);
-  brick.destroy();
-  this.score += 10;
-  this.updateScore();
-  if (this.staticBricks.countActive(true) === 0) {
-    this.levelUp();
+
+  let hardness = brick.getData("hardness");
+
+  if (hardness == 1) {
+    this.createBonusMalus(brick.x, brick.y, brick.getData("type"));
+    this.score += brick.getData("points");
+    brick.destroy();
+    this.updateScore();
+    if (this.staticBricks.countActive(true) === 0) {
+      this.levelUp();
+    }
+  } else {
+    brick.setData("hardness", hardness - 1);
   }
 };
 
-gameScene.createBonusMalus = function(x, y) {
-  let brick = this.dynamicBricks.create(x, y, "brick").setGravityY(50);
+gameScene.createBonusMalus = function(x, y, type) {
+  let brick = this.dynamicBricks.create(x, y, type).setGravityY(50);
   let rnd = Math.random();
 
   brick.meta = {
@@ -169,29 +180,9 @@ gameScene.gameOver = function() {
   this.scene.launch("HighScore", {score: this.score});
 };
 
-gameScene.createBricksWall = function() {
-  this.staticBricks = this.physics.add.staticGroup({
-    key: "brick",
-    frameQuantity: 28
-  });
-
-  Phaser.Actions.GridAlign(this.staticBricks.getChildren(), {
-    width: 7,
-    height: 4,
-    cellWidth: 80,
-    cellHeight: 48,
-    x: 68,
-    y: 52
-  });
-
-  Phaser.Actions.Call(this.staticBricks.getChildren(), function(brick) {
-    brick.refreshBody();
-  }, this);
-};
-
 gameScene.levelUp = function() {
   gSounds.levelUp.play(0.5);
-  this.createBricksWall();
+  this.levelManager.levelUp();
   this.paddle.reset();
   this.ball.reset();
   this.isPaused = true;
