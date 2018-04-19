@@ -13,6 +13,7 @@ bonusTimeScene.preload = function() {
 bonusTimeScene.create = function(data) {
   this.bonusTime = data.time;
   this.bonusPoints = data.points;
+  this.gameWon = data.gameWon;
   this.total = 0;
   this.now = Date.now();
 
@@ -88,8 +89,11 @@ bonusTimeScene.removeBackground = function() {
     bgs[3] .y += bgSpeed;
     this.now = Date.now();
   } else {
-    this.scene.resume("Game");
     this.scene.setVisible(false);
+    if (this.gameWon) {
+      this.scene.launch("Victory");
+    } else {
+      this.scene.resume("Game");
+    }
   }
 };
-

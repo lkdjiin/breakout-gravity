@@ -11,7 +11,12 @@ class LevelManager extends Phaser.GameObjects.GameObject {
 
   levelUp() {
     this.index++;
-    this._load();
+    if (this.index == this.list.length) {
+      return true;
+    } else {
+      this._load();
+      return false;
+    }
   }
 
   _load() {

@@ -8,6 +8,7 @@ gameScene.init = function() {
                      fontStyle: "italic", align: "center" };
   this.isPaused = true;
   this.info;
+  this.gameWon = false;
 };
 
 gameScene.preload = function() {
@@ -182,7 +183,7 @@ gameScene.gameOver = function() {
 
 gameScene.levelUp = function() {
   gSounds.levelUp.play(0.5);
-  this.levelManager.levelUp();
+  this.gameWon = this.levelManager.levelUp();
   this.paddle.reset();
   this.ball.reset();
   this.isPaused = true;
@@ -211,6 +212,10 @@ gameScene.manageBonusTime = function() {
   this.score += bonus;
 
   this.scene.pause();
-  this.scene.launch("BonusTime", {time: this.bonusTime.bonus, points: 100});
+  this.scene.launch("BonusTime", {
+    time: this.bonusTime.bonus,
+    points: 100,
+    gameWon: this.gameWon
+  });
   this.bonusTime.bonus = 90;
 };
