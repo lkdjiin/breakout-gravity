@@ -11,7 +11,7 @@ let config = {
       debug: false
     }
   },
-  scene: [gameScene, bonusTimeScene, highScoreScene],
+  scene: [gameScene, bonusTimeScene, highScoreScene, victoryScene],
   title: "Breakout {Gravity}",
   version: "0.5.0 «Hocus Bonus»"
 };
