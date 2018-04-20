@@ -17,6 +17,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.state = { size: this.PADDLE.normalSize };
     this.sizeChangedTime = Date.now();
     this.slippyValue = this.PADDLE.slippyValue;
+    this.indestructible = false;
 
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -93,6 +94,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
   brickHitPaddleEvent() {
     this.anims.play("hitByBrick", true);
+
+    if (this.indestructible) {
+      return;
+    }
+
     this.damageLevel++;
     if (this.damageLevel === 4) {
       this.scene.events.emit("brokenpaddle");
@@ -135,6 +141,13 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.speed *= multiplier;
     this.scene.time.delayedCall(timeToLive * 1000, () => {
       this.speed = this.PADDLE.speed;
+    });
+  }
+
+  setIndestructible(timeToLive) {
+    this.indestructible = true;
+    this.scene.time.delayedCall(timeToLive * 1000, () => {
+      this.indestructible = false;
     });
   }
 }
