@@ -4,6 +4,14 @@ class Level02 extends Phaser.GameObjects.GameObject {
     this.title = "Earthlight";
     this.background = "bg02";
     this.gravity = 35; 
+    this.bonuses = [
+      { type: "points", value: 50, ratio: 0.03 },
+      { type: "points", value: 100, ratio: 0.02 },
+      { type: "lives", value: 1, ratio: 0.15 }
+    ];
+    this.maluses = [
+      { type: "lives", value: 1, ratio: 0.1 }
+    ];
   }
 
   createBricksWall() {
