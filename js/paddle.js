@@ -2,15 +2,20 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   constructor() {
     super(config.scene[0], config.width / 2, config.height - 64, "paddle");
 
-    this.PADDLE_SIZE = Object.freeze({ normal: "normal", small: "small" });
+    this.PADDLE = Object.freeze({
+      normalSize: "normalSize",
+      smallSize: "smallSize",
+      slippyValue: 0.6
+    });
 
     this.speed = 1000;
     this.shotLimit = config.height - 100;
     this.isShooting = false;
     this.damageLevel = 0;
     this.key = this.scene.cursors;
-    this.state = { size: this.PADDLE_SIZE.normal };
+    this.state = { size: this.PADDLE.normalSize };
     this.sizeChangedTime = Date.now();
+    this.slippyValue = this.PADDLE.slippyValue;
 
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -36,7 +41,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     } else if (this.key.right.isDown) {
       this.setVelocityX(this.speed);
     } else {
-      this.body.velocity.x *= 0.7;
+      this.body.velocity.x *= this.slippyValue;
       if (this.body.velocity.x < 10 && this.body.velocity.x > -10) {
         this.setVelocityX(0);
       }
@@ -50,11 +55,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   updateSize() {
     if (this.key.down.isDown && Date.now() > this.sizeChangedTime + 500) {
       this.sizeChangedTime = Date.now();
-      if (this.state.size == this.PADDLE_SIZE.normal) {
-        this.state.size = this.PADDLE_SIZE.small;
+      if (this.state.size == this.PADDLE.normalSize) {
+        this.state.size = this.PADDLE.smallSize;
         this.setScale(0.5, 1);
-      } else if (this.state.size == this.PADDLE_SIZE.small) {
-        this.state.size = this.PADDLE_SIZE.normal;
+      } else if (this.state.size == this.PADDLE.smallSize) {
+        this.state.size = this.PADDLE.normalSize;
         this.setScale(1);
       }
     }
@@ -116,5 +121,12 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     let delta = 576 - this.y;
     let ratio = delta / 58.0;
     return -(ratio * 200 + 450);
+  }
+
+  changeSlippyValue(value, timeToLive) {
+    this.slippyValue = value;
+    this.scene.time.delayedCall(timeToLive * 1000, () => {
+      this.slippyValue = this.PADDLE.slippyValue;
+    });
   }
 }

@@ -47,7 +47,12 @@ If the following is a bonus: it's a bonus of type "points" (that is you earn
 some points when you caught it), it has a value of 50 (so you will earn 50
 points) and, with a ratio of 0.0», it has got 3 percent chance to appear when
 the ball hit a brick.
+
       { type: "points", value: 50, ratio: 0.03 }
+
+Some also must have a ttl (time to live) in seconds:
+
+      { type: "slippy", value: 0.9, ratio: 0.2, ttl: 30 }
 
 ## createBricksWall()
 

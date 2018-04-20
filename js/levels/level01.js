@@ -13,7 +13,8 @@ class Level01 extends Phaser.GameObjects.GameObject {
       { type: "lives", value: 1, ratio: 0.1 }
     ];
     this.maluses = [
-      { type: "lives", value: 1, ratio: 0.1 }
+      { type: "lives", value: 1, ratio: 0.1 },
+      { type: "slippy", value: 0.9, ratio: 0.2, ttl: 20 }
     ];
   }
 

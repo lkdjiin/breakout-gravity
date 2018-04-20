@@ -25,9 +25,14 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
     for (let i = 0; i < bonuses.length; i++) {
       if (rnd < threshold + bonuses[i].ratio) {
         brick.setTint(0x00ff00);
+        // FIXME Stop doing this shit and use only one data:
+        // the stringified json.
         brick.setData("bonus", true);
         brick.setData("bonusType", bonuses[i].type);
         brick.setData("bonusValue", bonuses[i].value);
+        if (bonuses[i].ttl) {
+          brick.setData("bonusTTL", bonuses[i].ttl);
+        }
         return;
       } else {
         threshold += bonuses[i].ratio;
@@ -42,6 +47,9 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
         brick.setData("malus", true);
         brick.setData("malusType", maluses[i].type);
         brick.setData("malusValue", maluses[i].value);
+        if (maluses[i].ttl) {
+          brick.setData("malusTTL", maluses[i].ttl);
+        }
         return;
       } else {
         threshold += maluses[i].ratio;
@@ -71,6 +79,8 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
     if (item.getData("malusType") == "lives") {
       // FIXME One should be able to lost several lives.
       this.scene.lives.lost();
+    } else if (item.getData("malusType") == "slippy") {
+      this.scene.paddle.changeSlippyValue(item.getData("malusValue"), item.getData("malusTTL"));
     }
   }
 }
