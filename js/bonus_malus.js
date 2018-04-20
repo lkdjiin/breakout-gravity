@@ -55,22 +55,33 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
 
   _bonus(item) {
     let fields = JSON.parse(item.getData("bonus"));
-    if (fields.type == "points") {
-      // FIXME score should be an object on its own, like Lives or Paddle.
-      this.scene.score += fields.value;
-      this.scene.updateScore();  
-    } else if (fields.type == "lives") {
-      this.scene.lives.add(fields.value);
+
+    switch (fields.type) {
+      case "points":
+        // FIXME score should be an object on its own, like Lives or Paddle.
+        this.scene.score += fields.value;
+        this.scene.updateScore();
+        break;
+      case "lives":
+        this.scene.lives.add(fields.value);
+        break;
     }
   }
 
   _malus(item) {
     let fields = JSON.parse(item.getData("malus"));
-    if (fields.type == "lives") {
-      // FIXME One should be able to lost several lives.
-      this.scene.lives.lost();
-    } else if (fields.type == "slippy") {
-      this.scene.paddle.changeSlippyValue(fields.value, fields.ttl);
+
+    switch (fields.type) {
+      case "lives":
+        // FIXME One should be able to lost several lives.
+        this.scene.lives.lost();
+        break;
+      case "slippy":
+        this.scene.paddle.changeSlippyValue(fields.value, fields.ttl);
+        break;
+      case "slow":
+        this.scene.paddle.changeSpeed(fields.value, fields.ttl);
+        break;
     }
   }
 }

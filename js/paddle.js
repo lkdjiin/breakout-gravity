@@ -5,10 +5,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.PADDLE = Object.freeze({
       normalSize: "normalSize",
       smallSize: "smallSize",
-      slippyValue: 0.6
+      slippyValue: 0.6,
+      speed: 1000
     });
 
-    this.speed = 1000;
+    this.speed = this.PADDLE.speed;
     this.shotLimit = config.height - 100;
     this.isShooting = false;
     this.damageLevel = 0;
@@ -127,6 +128,13 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.slippyValue = value;
     this.scene.time.delayedCall(timeToLive * 1000, () => {
       this.slippyValue = this.PADDLE.slippyValue;
+    });
+  }
+
+  changeSpeed(multiplier, timeToLive) {
+    this.speed *= multiplier;
+    this.scene.time.delayedCall(timeToLive * 1000, () => {
+      this.speed = this.PADDLE.speed;
     });
   }
 }
