@@ -4,6 +4,20 @@ class Level01 extends Phaser.GameObjects.GameObject {
     this.title = "Moonlight";
     this.background = "bg01";
     this.gravity = 200;
+    this.bonuses = [
+      { type: "points", value: 50, ratio: 0.01 },
+      { type: "points", value: 100, ratio: 0.01 },
+      { type: "points", value: 250, ratio: 0.01 },
+      { type: "points", value: 500, ratio: 0.005 },
+      { type: "points", value: 1000, ratio: 0.001 },
+      { type: "lives", value: 1, ratio: 0.01 },
+      { type: "indestructible", ratio: 0.2, ttl: 20 },
+    ];
+    this.maluses = [
+      { type: "lives", value: 1, ratio: 0.07 },
+      { type: "slow", value: 0.25, ratio: 0.07, ttl: 20 },
+      { type: "slippy", value: 0.9, ratio: 0.07, ttl: 20 },
+    ];
   }
 
   createBricksWall() {

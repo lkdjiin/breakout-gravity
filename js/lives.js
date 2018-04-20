@@ -20,6 +20,12 @@ class Lives extends Phaser.GameObjects.GameObject {
     this.text.setText(this.remaining);
   }
 
+  add(number) {
+    for (let i = 0; i < number; i++) {
+      this.addOne();
+    }
+  }
+
   addOne() {
     this.remaining++;
     this.text.setText(this.remaining);

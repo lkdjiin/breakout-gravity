@@ -38,6 +38,7 @@ gameScene.create = function() {
 
   this.createAnimations();
   this.dynamicBricks = this.physics.add.group();
+  this.bonusMalus = new BonusMalus(this.dynamicBricks);
 
   this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
@@ -117,10 +118,11 @@ gameScene.ballHitBrick = function(brick) {
   let hardness = brick.getData("hardness");
 
   if (hardness == 1) {
-    this.createBonusMalus(brick.x, brick.y, brick.getData("type"));
+    this.bonusMalus.createFrom(brick);
     this.score += brick.getData("points");
     brick.destroy();
     this.updateScore();
+    // FIXME Should be in update().
     if (this.staticBricks.countActive(true) === 0) {
       this.levelUp();
     }
@@ -129,40 +131,20 @@ gameScene.ballHitBrick = function(brick) {
   }
 };
 
-gameScene.createBonusMalus = function(x, y, type) {
-  let brick = this.dynamicBricks.create(x, y, type).setGravityY(50);
-  let rnd = Math.random();
-
-  brick.meta = {
-    bonus: false,
-    malus: false
-  };
-
-  if (rnd < 0.1) {
-    brick.setTint(0x00ff00);
-    brick.meta.bonus = true;
-  } else if (rnd < 0.3) {
-    brick.setTint(0xff0000);
-    brick.meta.malus = true;
-  }
-};
-
 gameScene.updateScore = function() {
   this.scoreText.setText(this.score.toString().padLeft("000000"));
 };
 
-gameScene.brickHitPaddle = function(brick) {
-  if (brick.meta.bonus) {
-    this.lives.addOne();
-  } else if (brick.meta.malus) {
-    this.lives.lost();
+gameScene.brickHitPaddle = function(item) {
+  if (item.getData("bonus") || item.getData("malus")) {
+    this.events.emit("bonusmalushit", item);
   } else {
+    this.events.emit("brickhitpaddle");
     gSounds.brickHitPaddle.play(0.2);
     this.cameras.main.flash(500);
   }
 
-  this.events.emit("brickhitpaddle", brick);
-  brick.destroy();
+  item.destroy();
 };
 
 gameScene.ballHitPaddle = function() {
