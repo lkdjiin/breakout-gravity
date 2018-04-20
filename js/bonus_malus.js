@@ -25,14 +25,7 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
     for (let i = 0; i < bonuses.length; i++) {
       if (rnd < threshold + bonuses[i].ratio) {
         brick.setTint(0x00ff00);
-        // FIXME Stop doing this shit and use only one data:
-        // the stringified json.
-        brick.setData("bonus", true);
-        brick.setData("bonusType", bonuses[i].type);
-        brick.setData("bonusValue", bonuses[i].value);
-        if (bonuses[i].ttl) {
-          brick.setData("bonusTTL", bonuses[i].ttl);
-        }
+        brick.setData("bonus", JSON.stringify(bonuses[i]));
         return;
       } else {
         threshold += bonuses[i].ratio;
@@ -44,12 +37,7 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
     for (let i = 0; i < maluses.length; i++) {
       if (rnd < threshold + maluses[i].ratio) {
         brick.setTint(0xff0000);
-        brick.setData("malus", true);
-        brick.setData("malusType", maluses[i].type);
-        brick.setData("malusValue", maluses[i].value);
-        if (maluses[i].ttl) {
-          brick.setData("malusTTL", maluses[i].ttl);
-        }
+        brick.setData("malus", JSON.stringify(maluses[i]));
         return;
       } else {
         threshold += maluses[i].ratio;
@@ -66,21 +54,23 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
   }
 
   _bonus(item) {
-    if (item.getData("bonusType") == "points") {
+    let fields = JSON.parse(item.getData("bonus"));
+    if (fields.type == "points") {
       // FIXME score should be an object on its own, like Lives or Paddle.
-      this.scene.score += item.getData("bonusValue");
+      this.scene.score += fields.value;
       this.scene.updateScore();  
-    } else if (item.getData("bonusType") == "lives") {
-      this.scene.lives.add(item.getData("bonusValue"));
+    } else if (fields.type == "lives") {
+      this.scene.lives.add(fields.value);
     }
   }
 
   _malus(item) {
-    if (item.getData("malusType") == "lives") {
+    let fields = JSON.parse(item.getData("malus"));
+    if (fields.type == "lives") {
       // FIXME One should be able to lost several lives.
       this.scene.lives.lost();
-    } else if (item.getData("malusType") == "slippy") {
-      this.scene.paddle.changeSlippyValue(item.getData("malusValue"), item.getData("malusTTL"));
+    } else if (fields.type == "slippy") {
+      this.scene.paddle.changeSlippyValue(fields.value, fields.ttl);
     }
   }
 }
