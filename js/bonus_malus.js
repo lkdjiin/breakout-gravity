@@ -24,8 +24,8 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
 
     for (let i = 0; i < bonuses.length; i++) {
       if (rnd < threshold + bonuses[i].ratio) {
-        brick.setTint(0x00ff00);
         brick.setData("bonus", JSON.stringify(bonuses[i]));
+        brick.setTexture("bonus");
         return;
       } else {
         threshold += bonuses[i].ratio;
@@ -36,8 +36,8 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
 
     for (let i = 0; i < maluses.length; i++) {
       if (rnd < threshold + maluses[i].ratio) {
-        brick.setTint(0xff0000);
         brick.setData("malus", JSON.stringify(maluses[i]));
+        brick.setTexture("malus");
         return;
       } else {
         threshold += maluses[i].ratio;

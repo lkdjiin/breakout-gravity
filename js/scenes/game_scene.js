@@ -22,6 +22,8 @@ gameScene.preload = function() {
   this.load.image("star", "assets/images/bg-star.png");
   this.load.image("bg01", "assets/images/bg-image-01.jpg");
   this.load.image("bg02", "assets/images/bg-image-02.jpg");
+  this.load.image("bonus", "assets/images/bonus.png");
+  this.load.image("malus", "assets/images/malus.png");
 };
 
 gameScene.create = function() {
