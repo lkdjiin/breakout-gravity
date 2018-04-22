@@ -150,4 +150,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       this.indestructible = false;
     });
   }
+
+  changeSize(timeToLive) {
+    this.setScale(0.6, 1);
+    this.scene.time.delayedCall(timeToLive * 1000, () => {
+      this.setScale(1);
+    });
+  }
 }

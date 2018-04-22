@@ -88,6 +88,9 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
       case "fastBall":
         this.scene.ball.changeSpeed(fields.value, fields.ttl);
         break;
+      case "narrowing":
+        this.scene.paddle.changeSize(fields.ttl);
+        break;
     }
   }
 }
