@@ -3,8 +3,8 @@ let gameScene = new Phaser.Scene("Game");
 gameScene.init = function() {
   this.score = 0;
   this.scoreText;
-  this.digitFont = { fontFamily: "Courier", fontSize: "28px", fill: "#ddd" };
-  this.rulesFont = { fontFamily: "Courier", fontSize: "40px", fill: "#ddd",
+  this.digitFont = { fontFamily: "Courier", fontSize: "28px", color: "#ddd" };
+  this.rulesFont = { fontFamily: "Courier", fontSize: "40px", color: "#ddd",
                      fontStyle: "italic", align: "center" };
   this.isPaused = true;
   this.info;
@@ -55,6 +55,8 @@ gameScene.create = function() {
     "Press space and\nbeat the gravity",
     this.rulesFont
   ).setOrigin(0.5, 0.5);
+  this.info.setStroke('#959', 8);
+  this.info.setShadow(2, 2, "#222", 2, false, true);
 
   this.add.image(config.width - 64, config.height - 18, "heart").setScale(0.6);
   this.add.image(24, config.height - 18, "coin").setScale(0.7);
