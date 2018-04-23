@@ -4,6 +4,7 @@ class Level0103 extends Phaser.GameObjects.GameObject {
     this.title = "Moonlight Sonata";
     this.background = "bg03";
     this.gravity = 200;
+    this.bonusTime = 80;
     this.bonuses = [
       { type: "points", value: 25, ratio: 0.05 },
       { type: "points", value: 50, ratio: 0.02 },

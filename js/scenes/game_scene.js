@@ -71,7 +71,7 @@ gameScene.create = function() {
   this.events.on("gameover", this.gameOver, this);
   this.events.on("ballreset", () => { this.ball.reset(); }, this);
 
-  this.bonusTime = new BonusTime(90);
+  this.bonusTime = new BonusTime(this.levelManager.level.bonusTime);
 };
 
 gameScene.update = function() {
@@ -206,5 +206,5 @@ gameScene.manageBonusTime = function() {
     points: 100,
     gameWon: this.gameWon
   });
-  this.bonusTime.bonus = 90;
+  this.bonusTime.bonus = this.levelManager.level.bonusTime;
 };

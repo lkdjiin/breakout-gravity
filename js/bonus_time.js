@@ -16,6 +16,7 @@ class BonusTime extends Phaser.GameObjects.GameObject {
     }
   }
 
+  // FIXME time() is better
   get bonus() {
     if (this._remaining > 0) {
       return this._remaining;
@@ -24,6 +25,7 @@ class BonusTime extends Phaser.GameObjects.GameObject {
     }
   }
 
+  // FIXME time(value) is better
   set bonus(value) {
     this._remaining = value;
     this._now = Date.now();
