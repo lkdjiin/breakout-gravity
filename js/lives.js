@@ -5,7 +5,7 @@ class Lives extends Phaser.GameObjects.GameObject {
     this.worldWidth = config.width;
     this.worldHeight = config.height;
 
-    this.remaining = 7;
+    this.remaining = 3;
     this.text = this.scene.add.text(config.width - 48, config.height - 30,
                                     this.remaining, this.scene.digitFont);
 
