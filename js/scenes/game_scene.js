@@ -17,11 +17,14 @@ gameScene.preload = function() {
                         { frameWidth: 152, frameHeight: 48 });
   this.load.image("brick", "assets/images/brick.png");
   this.load.image("brick2", "assets/images/brick2.png");
+  this.load.image("brick3", "assets/images/brick3.png");
+  this.load.image("brick4", "assets/images/brick4.png");
   this.load.image("heart", "assets/images/heart.png");
   this.load.image("coin", "assets/images/coin.png");
   this.load.image("star", "assets/images/bg-star.png");
-  this.load.image("bg01", "assets/images/bg-image-01.jpg");
-  this.load.image("bg02", "assets/images/bg-image-02.jpg");
+  this.load.image("bg01", "assets/images/bg01-06.jpg");
+  this.load.image("bg02", "assets/images/bg01-04.jpg");
+  this.load.image("bg03", "assets/images/bg01-02.jpg");
   this.load.image("bonus", "assets/images/bonus.png");
   this.load.image("malus", "assets/images/malus.png");
 };
@@ -29,7 +32,7 @@ gameScene.preload = function() {
 gameScene.create = function() {
   displayVersion();
 
-  let levels = [Level01, Level02];
+  let levels = [Level0101, Level0102, Level0103];
   this.levelManager = new LevelManager(levels);
 
   this.backgroundStars = new StarryBackground();

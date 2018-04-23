@@ -1,3 +1,4 @@
+// Example of level
 class Level02 extends Phaser.GameObjects.GameObject {
   constructor() {
     super(config.scene[0], "level02");

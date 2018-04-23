@@ -30,9 +30,15 @@ highScoreScene.update = function() {
     this.cameras.main.resetFX();
     this.state = 4;
   } else if (this.state == 4 && Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-    this.scene.stop("Game");
-    this.scene.start("Game");
-    this.scene.setVisible(false);
+    // FIXME Either there is a bug in Phaser 3.5.1 or I made a mistake.
+    // In any cases, restarting the scene now behave strangely.
+    // Temporary fixed by reloading all. Old code is:
+    //
+    //     this.scene.stop("Game");
+    //     this.scene.start("Game");
+    //     this.scene.setVisible(false);
+    //
+    location.reload();
   }
 };
 
