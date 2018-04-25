@@ -13,6 +13,7 @@ class StarryBackground extends Phaser.Physics.Arcade.Group {
       star.alpha = Math.random();
       star.setVelocityY(this.velocity);
       star.setScale(this.scale);
+      star.setDepth(-1);
     }, this);
 
     this.scene.events.on('update', this.update, this);

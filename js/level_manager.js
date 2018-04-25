@@ -6,6 +6,7 @@ class LevelManager extends Phaser.GameObjects.GameObject {
     this.index = 0;
     // Any image will do the job here. This is only to create a reference.
     this.background = this.scene.add.image(config.width / 2, config.height / 2, "ball");
+    this.background.setDepth(-2);
     this._load();
   }
 
