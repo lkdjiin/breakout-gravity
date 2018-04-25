@@ -129,8 +129,8 @@ gameScene.ballHitBrick = function(brick) {
     this.score += brick.getData("points");
     brick.destroy();
     this.updateScore();
-    // FIXME Should be in update().
     if (this.staticBricks.countActive(true) === 0) {
+      this.dynamicBricks.clear();
       this.levelUp();
     }
   } else {
