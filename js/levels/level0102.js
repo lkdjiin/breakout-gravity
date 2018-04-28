@@ -10,8 +10,9 @@ class Level0102 extends Phaser.GameObjects.GameObject {
       { type: "points", value: 50, ratio: 0.02 },
       { type: "points", value: 75, ratio: 0.02 },
       { type: "points", value: 100, ratio: 0.01 },
-      { type: "lives", value: 1, ratio: 0.05 },
+      { type: "lives", value: 1, ratio: 0.03 },
       { type: "indestructible", ratio: 0.05, ttl: 15 },
+      { type: "ball", ratio: 0.07 },
     ];
     this.maluses = [
       { type: "lives", value: 1, ratio: 0.02 },

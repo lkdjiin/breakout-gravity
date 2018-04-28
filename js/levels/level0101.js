@@ -7,11 +7,12 @@ class Level0101 extends Phaser.GameObjects.GameObject {
     this.bonusTime = 120;
     this.bonuses = [
       { type: "points", value: 25, ratio: 0.1 },
-      { type: "points", value: 50, ratio: 0.05 },
-      { type: "points", value: 75, ratio: 0.05 },
+      { type: "points", value: 50, ratio: 0.04 },
+      { type: "points", value: 75, ratio: 0.03 },
       { type: "points", value: 100, ratio: 0.02 },
-      { type: "lives", value: 1, ratio: 0.05 },
-      { type: "indestructible", ratio: 0.05, ttl: 15 },
+      { type: "lives", value: 1, ratio: 0.02 },
+      { type: "indestructible", ratio: 0.04, ttl: 15 },
+      { type: "ball", ratio: 0.1 },
     ];
     this.maluses = [
       { type: "lives", value: 1, ratio: 0.07 },
