@@ -10,14 +10,15 @@ class Level0103 extends Phaser.GameObjects.GameObject {
       { type: "points", value: 50, ratio: 0.02 },
       { type: "points", value: 75, ratio: 0.02 },
       { type: "points", value: 100, ratio: 0.01 },
-      { type: "lives", value: 1, ratio: 0.05 },
-      { type: "indestructible", ratio: 0.05, ttl: 15 },
+      { type: "lives", value: 1, ratio: 0.02 },
+      { type: "indestructible", ratio: 0.02, ttl: 15 },
+      { type: "ball", ratio: 0.15 },
     ];
     this.maluses = [
       { type: "lives", value: 1, ratio: 0.02 },
       { type: "slow", value: 0.25, ratio: 0.05, ttl: 10 },
       { type: "slippy", value: 0.9, ratio: 0.05, ttl: 10 },
-      { type: "fastBall", value: 1.7, ratio: 0.1, ttl: 10 },
+      { type: "fastBall", value: 1.7, ratio: 0.3, ttl: 10 },
       { type: "narrowing", ratio: 0.2, ttl: 10 },
     ];
   }
