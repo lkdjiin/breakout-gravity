@@ -58,4 +58,10 @@ class Balls extends Phaser.GameObjects.GameObject {
       }
     }
   }
+
+  changeSpeed(value, timeToLive) {
+    for (let i = 0; i < this.balls.length; i++) {
+      this.balls[i].changeSpeed(value, timeToLive);
+    }
+  }
 }
