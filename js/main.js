@@ -13,7 +13,7 @@ let config = {
   },
   scene: [gameScene, bonusTimeScene, highScoreScene, victoryScene],
   title: "Breakout {Gravity}",
-  version: "0.7.0 «Moonlight Sonata»"
+  version: "0.8.0 «Mooltiball»"
 };
 
 let game = new Phaser.Game(config);
