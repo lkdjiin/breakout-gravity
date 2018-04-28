@@ -25,6 +25,9 @@ gameScene.preload = function() {
   this.load.image("bg01", "assets/images/bg01-06.jpg");
   this.load.image("bg02", "assets/images/bg01-04.jpg");
   this.load.image("bg03", "assets/images/bg01-02.jpg");
+  this.load.image("bg04", "assets/images/bg02-01.jpg");
+  this.load.image("bg05", "assets/images/bg02-02.jpg");
+  this.load.image("bg06", "assets/images/bg02-03.jpg");
   this.load.image("bonus", "assets/images/bonus.png");
   this.load.image("malus", "assets/images/malus.png");
 };
@@ -32,7 +35,7 @@ gameScene.preload = function() {
 gameScene.create = function() {
   displayVersion();
 
-  let levels = [Level0101, Level0102, Level0103];
+  let levels = [Level0101, Level0102, Level0103, Level0201, Level0202, Level0203];
   this.levelManager = new LevelManager(levels);
 
   this.backgroundStars = new StarryBackground();
