@@ -68,6 +68,9 @@ class BonusMalus extends Phaser.GameObjects.GameObject {
       case "indestructible":
         this.scene.paddle.setIndestructible(fields.ttl);
         break;
+      case "ball":
+        this.scene.addBall();
+        break;
     }
   }
 

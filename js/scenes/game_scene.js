@@ -38,7 +38,7 @@ gameScene.create = function() {
   this.backgroundStars = new StarryBackground();
   this.cursors = this.input.keyboard.createCursorKeys();
   this.paddle = new Paddle();
-  this.ball = new Ball();
+  this.balls = new Balls();
   this.lives = new Lives();
 
   this.createAnimations();
@@ -69,17 +69,17 @@ gameScene.create = function() {
   this.time.delayedCall(1500, () => { gSounds.newGame.play(); }, [], this);
 
   this.events.on("gameover", this.gameOver, this);
-  this.events.on("ballreset", () => { this.ball.reset(); }, this);
+  this.events.on("ballreset", () => { this.balls.reset(); }, this);
 
   this.bonusTime = new BonusTime(this.levelManager.level.bonusTime);
 };
 
 gameScene.update = function() {
-  this.physics.add.collider(this.ball, this.paddle, () => {
-    this.ballHitPaddle.call(this);
+  this.physics.add.collider(this.balls.getChildren(), this.paddle, (a, b) => {
+    this.ballHitPaddle(a, b);
   });
 
-  this.physics.add.collider(this.ball, this.staticBricks, (_, brick) => {
+  this.physics.add.collider(this.balls.getChildren(), this.staticBricks, (_, brick) => {
     this.ballHitBrick(brick);
   });
 
@@ -100,10 +100,6 @@ gameScene.update = function() {
     } else {
       this.resume();
     }
-  }
-
-  if (this.ball.isLeavingScreen()) {
-    this.events.emit("ballleavesscreen");
   }
 };
 
@@ -154,10 +150,11 @@ gameScene.brickHitPaddle = function(item) {
   item.destroy();
 };
 
-gameScene.ballHitPaddle = function() {
+gameScene.ballHitPaddle = function(ball, paddle) {
   if (this.paddle.isShooting) {
     gSounds.bounce.play(0.5);
-    this.events.emit("ballhitpaddle", this.ball.x, this.paddle.x, this.paddle.shotStrength);
+    this.events.emit("ballhitpaddle",
+                     ball.x, paddle.x, paddle.shotStrength, ball.index);
   }
 };
 
@@ -174,7 +171,7 @@ gameScene.levelUp = function() {
   gSounds.levelUp.play(0.5);
   this.gameWon = this.levelManager.levelUp();
   this.paddle.reset();
-  this.ball.reset();
+  this.balls.reset();
   this.isPaused = true;
   this.physics.pause();
   this.manageBonusTime();
@@ -207,4 +204,8 @@ gameScene.manageBonusTime = function() {
     gameWon: this.gameWon
   });
   this.bonusTime.bonus = this.levelManager.level.bonusTime;
+};
+
+gameScene.addBall = function() {
+  this.balls.addBall();
 };
