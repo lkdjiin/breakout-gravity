@@ -31,7 +31,8 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
   reset() {
     this.x = config.width / 2;
     this.y = 240;
-    this.body.setVelocity(0, 100);
+    this.body.setVelocity(Math.random() * 200 - 100, 100);
+
     this.speed = this.BALL.speed;
   }
 
