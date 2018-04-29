@@ -175,6 +175,7 @@ gameScene.levelUp = function() {
   this.gameWon = this.levelManager.levelUp();
   this.paddle.reset();
   this.balls.reset();
+  this.lives.addOne();
   this.isPaused = true;
   this.physics.pause();
   this.manageBonusTime();
