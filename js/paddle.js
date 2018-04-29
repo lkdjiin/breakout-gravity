@@ -6,7 +6,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       normalSize: "normalSize",
       smallSize: "smallSize",
       slippyValue: 0.6,
-      speed: 1000
+      speed: 800
     });
 
     this.speed = this.PADDLE.speed;
