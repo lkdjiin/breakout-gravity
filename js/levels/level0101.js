@@ -1,7 +1,7 @@
 class Level0101 extends Phaser.GameObjects.GameObject {
   constructor() {
     super(config.scene[0], "level0101");
-    this.title = "Hello, World!";
+    this.title = "On Earth";
     this.background = "bg01";
     this.gravity = 200;
     this.bonusTime = 120;

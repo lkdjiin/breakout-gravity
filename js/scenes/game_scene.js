@@ -57,8 +57,8 @@ gameScene.create = function() {
 
   this.info = this.add.text(
     config.width / 2,
-    config.height / 2,
-    "Press space and\nbeat the gravity",
+    config.height * 0.6,
+    "{" + this.levelManager.level.title + "}\nPress space and\nbeat the gravity",
     this.rulesFont
   ).setOrigin(0.5, 0.5);
   this.info.setStroke('#959', 8);
@@ -180,7 +180,7 @@ gameScene.levelUp = function() {
   this.physics.pause();
   this.manageBonusTime();
   this.updateScore();
-  this.info.setText("Level up,\npress space");
+  this.info.setText("{" + this.levelManager.level.title + "}\npress space");
 };
 
 gameScene.createAnimations = function() {
