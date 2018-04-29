@@ -5,6 +5,7 @@ class Level0201 extends Phaser.GameObjects.GameObject {
     this.background = "bg04";
     this.gravity = 50;
     this.bonusTime = 120;
+    this.bonusPoints = 175;
     this.bonuses = [
       { type: "points", value: 50, ratio: 0.1 },
       { type: "points", value: 75, ratio: 0.05 },

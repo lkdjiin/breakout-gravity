@@ -172,13 +172,14 @@ gameScene.gameOver = function() {
 
 gameScene.levelUp = function() {
   gSounds.levelUp.play(0.5);
+  let points = this.levelManager.level.bonusPoints;
   this.gameWon = this.levelManager.levelUp();
   this.paddle.reset();
   this.balls.reset();
   this.lives.addOne();
   this.isPaused = true;
   this.physics.pause();
-  this.manageBonusTime();
+  this.manageBonusTime(points);
   this.updateScore();
   this.info.setText("{" + this.levelManager.level.title + "}\npress space");
 };
@@ -197,14 +198,14 @@ gameScene.createAnimations = function() {
   });
 };
 
-gameScene.manageBonusTime = function() {
-  let bonus = this.bonusTime.bonus * 100;
+gameScene.manageBonusTime = function(points) {
+  let bonus = this.bonusTime.bonus * points;
   this.score += bonus;
 
   this.scene.pause();
   this.scene.launch("BonusTime", {
     time: this.bonusTime.bonus,
-    points: 100,
+    points: points,
     gameWon: this.gameWon
   });
   this.bonusTime.bonus = this.levelManager.level.bonusTime;
